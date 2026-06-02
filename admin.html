@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Taşmekan – Menü Yönetim Paneli</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #111; color: #eee; min-height: 100vh; }
+
+  /* TOP BAR */
+  .topbar { background: #1a1a2e; border-bottom: 2px solid #c8a951; padding: 14px 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .topbar h1 { font-size: 1.2rem; color: #c8a951; flex-shrink: 0; }
+  .topbar .spacer { flex: 1; }
+  .btn { padding: 8px 18px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.88rem; font-weight: 600; transition: .15s; }
+  .btn-gold { background: #c8a951; color: #111; }
+  .btn-gold:hover { background: #e0c060; }
+  .btn-red { background: #c0392b; color: #fff; }
+  .btn-red:hover { background: #e74c3c; }
+  .btn-green { background: #27ae60; color: #fff; }
+  .btn-green:hover { background: #2ecc71; }
+  .btn-gray { background: #444; color: #eee; }
+  .btn-gray:hover { background: #555; }
+  .btn-sm { padding: 5px 12px; font-size: 0.8rem; }
+
+  /* FILTERS ROW */
+  .filterbar { background: #161616; padding: 12px 24px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; border-bottom: 1px solid #2a2a2a; }
+  .filterbar label { font-size: 0.82rem; color: #aaa; }
+  .filterbar select, .filterbar input[type=text] { background: #222; border: 1px solid #333; color: #eee; border-radius: 6px; padding: 7px 10px; font-size: 0.88rem; }
+  .filterbar input[type=text] { width: 260px; }
+  .filterbar select:focus, .filterbar input:focus { outline: none; border-color: #c8a951; }
+  .count-badge { background: #c8a951; color: #111; padding: 3px 10px; border-radius: 12px; font-size: 0.78rem; font-weight: 700; margin-left: auto; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; padding: 0 12px 40px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-top: 12px; }
+  th { background: #1a1a2e; color: #c8a951; text-align: left; padding: 10px 12px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: .05em; position: sticky; top: 0; z-index: 1; }
+  td { padding: 8px 12px; border-bottom: 1px solid #222; vertical-align: middle; }
+  tr:hover td { background: #1a1a1a; }
+  tr.inactive td { opacity: .38; }
+  tr.inactive .status-badge { background: #555; }
+
+  .img-thumb { width: 54px; height: 40px; object-fit: cover; border-radius: 4px; cursor: pointer; }
+  .img-placeholder { width: 54px; height: 40px; background: #2a2a2a; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: .7rem; color: #555; }
+
+  .status-badge { display: inline-block; padding: 3px 9px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; background: #27ae60; color: #fff; }
+  .tag-cat { display: inline-block; background: #1a1a2e; border: 1px solid #c8a951; color: #c8a951; border-radius: 10px; padding: 2px 8px; font-size: 0.75rem; }
+  .price-cell { font-weight: 700; color: #c8a951; white-space: nowrap; }
+
+  /* MODAL */
+  .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 100; align-items: center; justify-content: center; }
+  .modal-bg.open { display: flex; }
+  .modal { background: #1c1c1c; border: 1px solid #333; border-radius: 10px; width: 100%; max-width: 560px; max-height: 92vh; overflow-y: auto; padding: 28px; position: relative; }
+  .modal h2 { color: #c8a951; margin-bottom: 20px; font-size: 1.1rem; }
+  .modal .close-btn { position: absolute; top: 14px; right: 18px; background: none; border: none; color: #aaa; font-size: 1.4rem; cursor: pointer; }
+  .modal .close-btn:hover { color: #fff; }
+  .form-row { margin-bottom: 14px; }
+  .form-row label { display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 5px; }
+  .form-row input, .form-row textarea, .form-row select { width: 100%; background: #252525; border: 1px solid #333; color: #eee; border-radius: 6px; padding: 8px 10px; font-size: 0.9rem; }
+  .form-row textarea { height: 80px; resize: vertical; }
+  .form-row input:focus, .form-row textarea:focus, .form-row select:focus { outline: none; border-color: #c8a951; }
+  .form-row .img-preview { width: 100%; height: 140px; object-fit: cover; border-radius: 6px; margin-top: 8px; border: 1px solid #333; }
+  .modal-footer { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: #27ae60; color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; z-index: 200; opacity: 0; transition: opacity .3s; pointer-events: none; }
+  .toast.show { opacity: 1; }
+  .toast.error { background: #c0392b; }
+
+  /* ADD FORM TOP */
+  .add-bar { background: #161616; border-bottom: 1px solid #2a2a2a; padding: 0; max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+  .add-bar.open { max-height: 600px; padding: 20px 24px; }
+  .add-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media(max-width: 600px){ .add-grid { grid-template-columns: 1fr; } }
+
+  /* EXPORT */
+  .export-modal .code-box { background: #0d0d0d; border: 1px solid #333; border-radius: 6px; padding: 12px; font-family: monospace; font-size: 0.78rem; white-space: pre-wrap; max-height: 300px; overflow-y: auto; color: #7ec8a0; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <h1>🍽 Taşmekan – Menü Yönetim Paneli</h1>
+  <div class="spacer"></div>
+  <button class="btn btn-green" onclick="toggleAddBar()">+ Ürün Ekle</button>
+  <button class="btn btn-gold" onclick="openExport()">⬇ Dışa Aktar</button>
+  <button class="btn btn-gray btn-sm" onclick="resetToOriginal()">↺ Orijinale Dön</button>
+</div>
+
+<!-- ADD PRODUCT BAR -->
+<div class="add-bar" id="addBar">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+    <strong style="color:#c8a951;">Yeni Ürün Ekle</strong>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <label style="font-size:.82rem;color:#aaa;">Dil:</label>
+      <select id="addLang" style="background:#222;border:1px solid #333;color:#eee;border-radius:6px;padding:6px 10px;">
+        <option value="tr">Türkçe</option>
+        <option value="en">İngilizce</option>
+        <option value="both">Her İkisi</option>
+      </select>
+    </div>
+  </div>
+  <div class="add-grid">
+    <div class="form-row">
+      <label>Menü Sayfası</label>
+      <select id="addPage">
+        <option value="yiyecekler">Yiyecekler</option>
+        <option value="icecekler">İçecekler</option>
+        <option value="alkoller">Alkoller</option>
+        <option value="pastane">Pastane & Tatlılar</option>
+        <option value="nargile">Nargileler</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Kategori (filtre CSS sınıfı)</label>
+      <input type="text" id="addCat" placeholder="örn: başlangıç, burger, pizza..."/>
+    </div>
+    <div class="form-row">
+      <label>Ürün Adı (TR)</label>
+      <input type="text" id="addNameTr" placeholder="Türkçe ad"/>
+    </div>
+    <div class="form-row">
+      <label>Ürün Adı (EN)</label>
+      <input type="text" id="addNameEn" placeholder="İngilizce ad"/>
+    </div>
+    <div class="form-row">
+      <label>Açıklama (TR)</label>
+      <input type="text" id="addDescTr" placeholder="Türkçe açıklama"/>
+    </div>
+    <div class="form-row">
+      <label>Açıklama (EN)</label>
+      <input type="text" id="addDescEn" placeholder="İngilizce açıklama"/>
+    </div>
+    <div class="form-row">
+      <label>Fiyat (TL)</label>
+      <input type="number" id="addPrice" placeholder="örn: 350"/>
+    </div>
+    <div class="form-row">
+      <label>Görsel yolu (assets/images/ sonrası)</label>
+      <input type="text" id="addImg" placeholder="Menü/Başlangıçlar/urun.webp"/>
+    </div>
+  </div>
+  <div style="display:flex;gap:10px;margin-top:14px;">
+    <button class="btn btn-green" onclick="addProduct()">Ekle</button>
+    <button class="btn btn-gray" onclick="toggleAddBar()">İptal</button>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filterbar">
+  <label>Dil:</label>
+  <select id="filterLang" onchange="render()">
+    <option value="tr">Türkçe</option>
+    <option value="en">İngilizce</option>
+  </select>
+  <label>Sayfa:</label>
+  <select id="filterPage" onchange="render()">
+    <option value="yiyecekler">Yiyecekler</option>
+    <option value="icecekler">İçecekler</option>
+    <option value="alkoller">Alkoller</option>
+    <option value="pastane">Pastane & Tatlılar</option>
+    <option value="nargile">Nargileler</option>
+  </select>
+  <label>Durum:</label>
+  <select id="filterStatus" onchange="render()">
+    <option value="all">Tümü</option>
+    <option value="active">Aktif</option>
+    <option value="inactive">İnaktif</option>
+  </select>
+  <input type="text" id="searchBox" placeholder="🔍  Ürün adı, kategori, fiyat ara..." oninput="render()"/>
+  <span class="count-badge" id="countBadge">0 ürün</span>
+</div>
+
+<!-- TABLE -->
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Görsel</th>
+        <th>Ürün Adı</th>
+        <th>Kategori</th>
+        <th>Açıklama</th>
+        <th>Fiyat</th>
+        <th>Durum</th>
+        <th>İşlemler</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-bg" id="editModal">
+  <div class="modal">
+    <button class="close-btn" onclick="closeModal()">✕</button>
+    <h2>Ürün Düzenle</h2>
+    <input type="hidden" id="editId"/>
+    <div class="form-row">
+      <label>Ürün Adı</label>
+      <input type="text" id="editName"/>
+    </div>
+    <div class="form-row">
+      <label>Kategori</label>
+      <input type="text" id="editCat"/>
+    </div>
+    <div class="form-row">
+      <label>Fiyat (TL)</label>
+      <input type="number" id="editPrice"/>
+    </div>
+    <div class="form-row">
+      <label>Açıklama</label>
+      <textarea id="editDesc"></textarea>
+    </div>
+    <div class="form-row">
+      <label>Görsel yolu (assets/images/ sonrası)</label>
+      <input type="text" id="editImg" oninput="updateImgPreview()"/>
+      <img id="editImgPreview" class="img-preview" src="" alt="" style="display:none"/>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-gray" onclick="closeModal()">İptal</button>
+      <button class="btn btn-gold" onclick="saveEdit()">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXPORT MODAL -->
+<div class="modal-bg export-modal" id="exportModal">
+  <div class="modal" style="max-width:700px;">
+    <button class="close-btn" onclick="closeExport()">✕</button>
+    <h2>⬇ Dışa Aktar – menu-data.js</h2>
+    <p style="color:#aaa;font-size:.85rem;margin-bottom:14px;">Aşağıdaki içeriği kopyalayıp <code style="color:#c8a951;">assets/js/menu-data.js</code> dosyasına yapıştırın, sonra Git'e push edin.</p>
+    <div class="code-box" id="exportBox"></div>
+    <div class="modal-footer">
+      <button class="btn btn-gray" onclick="closeExport()">Kapat</button>
+      <button class="btn btn-gold" onclick="copyExport()">📋 Kopyala</button>
+      <button class="btn btn-green" onclick="downloadExport()">⬇ İndir</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/js/menu-data.js"></script>
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+const LS_KEY = 'tasmekan_menu_data';
+let data; // working copy
+
+function loadData() {
+  const saved = localStorage.getItem(LS_KEY);
+  if (saved) {
+    try { data = JSON.parse(saved); return; } catch(e) {}
+  }
+  // Deep clone from MENU_DATA
+  data = JSON.parse(JSON.stringify(MENU_DATA));
+}
+
+function saveData() {
+  localStorage.setItem(LS_KEY, JSON.stringify(data));
+}
+
+function resetToOriginal() {
+  if (!confirm('Tüm değişiklikler silinip orijinal veriye dönülecek. Emin misin?')) return;
+  localStorage.removeItem(LS_KEY);
+  data = JSON.parse(JSON.stringify(MENU_DATA));
+  render();
+  toast('Orijinal veriye dönüldü.');
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function currentList() {
+  const lang = document.getElementById('filterLang').value;
+  const page = document.getElementById('filterPage').value;
+  return data[lang][page];
+}
+
+function findProduct(id) {
+  for (const lang of Object.keys(data))
+    for (const page of Object.keys(data[lang]))
+      for (const p of data[lang][page])
+        if (p.id === id) return p;
+  return null;
+}
+
+function allProductsById(id) {
+  // returns all lang variants with same id
+  const res = [];
+  for (const lang of Object.keys(data))
+    for (const page of Object.keys(data[lang]))
+      for (const p of data[lang][page])
+        if (p.id === id) res.push(p);
+  return res;
+}
+
+function nextId() {
+  let max = 0;
+  for (const lang of Object.keys(data))
+    for (const page of Object.keys(data[lang]))
+      for (const p of data[lang][page])
+        if (p.id > max) max = p.id;
+  return max + 1;
+}
+
+// ── Render ─────────────────────────────────────────────────────────────────
+function render() {
+  const q = document.getElementById('searchBox').value.toLowerCase().trim();
+  const status = document.getElementById('filterStatus').value;
+  const list = currentList();
+  const lang = document.getElementById('filterLang').value;
+
+  const filtered = list.filter(p => {
+    if (status === 'active' && !p.active) return false;
+    if (status === 'inactive' && p.active) return false;
+    if (q) {
+      const hay = `${p.name} ${p.cat} ${p.price} ${p.desc}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  document.getElementById('countBadge').textContent = `${filtered.length} ürün`;
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = filtered.map(p => `
+    <tr class="${p.active ? '' : 'inactive'}" id="row-${p.id}">
+      <td>
+        ${p.img
+          ? `<img class="img-thumb" src="assets/images/${p.img}" onerror="this.style.display='none'" title="${p.img}">`
+          : `<div class="img-placeholder">yok</div>`}
+      </td>
+      <td><strong>${escHtml(p.name)}</strong></td>
+      <td><span class="tag-cat">${escHtml(p.cat)}</span></td>
+      <td style="max-width:260px;color:#aaa;font-size:.82rem;">${escHtml(p.desc || '—')}</td>
+      <td class="price-cell">${p.price ? p.price + ' TL' : '—'}</td>
+      <td><span class="status-badge" style="${p.active ? '' : 'background:#555;'}">${p.active ? 'Aktif' : 'İnaktif'}</span></td>
+      <td style="white-space:nowrap;">
+        <button class="btn btn-gold btn-sm" onclick="openEdit(${p.id}, '${lang}')">Düzenle</button>
+        <button class="btn ${p.active ? 'btn-gray' : 'btn-green'} btn-sm" onclick="toggleActive(${p.id})">${p.active ? 'Gizle' : 'Göster'}</button>
+        <button class="btn btn-red btn-sm" onclick="deleteProduct(${p.id})">Sil</button>
+      </td>
+    </tr>`).join('');
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Toggle Active ──────────────────────────────────────────────────────────
+function toggleActive(id) {
+  const all = allProductsById(id);
+  const newState = !all[0].active;
+  all.forEach(p => p.active = newState);
+  saveData();
+  render();
+  toast(newState ? 'Ürün aktif edildi.' : 'Ürün gizlendi.');
+}
+
+// ── Delete ─────────────────────────────────────────────────────────────────
+function deleteProduct(id) {
+  if (!confirm('Bu ürün TR ve EN\'den kalıcı olarak silinecek. Emin misin?')) return;
+  for (const lang of Object.keys(data))
+    for (const page of Object.keys(data[lang]))
+      data[lang][page] = data[lang][page].filter(p => p.id !== id);
+  saveData();
+  render();
+  toast('Ürün silindi.', 'error');
+}
+
+// ── Edit Modal ─────────────────────────────────────────────────────────────
+let editingLang = 'tr';
+
+function openEdit(id, lang) {
+  editingLang = lang;
+  const p = data[lang] && Object.values(data[lang]).flat().find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('editId').value = id;
+  document.getElementById('editName').value = p.name;
+  document.getElementById('editCat').value = p.cat;
+  document.getElementById('editPrice').value = p.price;
+  document.getElementById('editDesc').value = p.desc || '';
+  document.getElementById('editImg').value = p.img || '';
+  updateImgPreview();
+  document.getElementById('editModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('editModal').classList.remove('open');
+}
+
+function updateImgPreview() {
+  const val = document.getElementById('editImg').value.trim();
+  const preview = document.getElementById('editImgPreview');
+  if (val) {
+    preview.src = `assets/images/${val}`;
+    preview.style.display = 'block';
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+function saveEdit() {
+  const id = parseInt(document.getElementById('editId').value);
+  const newName = document.getElementById('editName').value.trim();
+  const newCat  = document.getElementById('editCat').value.trim();
+  const newPrice= parseInt(document.getElementById('editPrice').value) || 0;
+  const newDesc = document.getElementById('editDesc').value.trim();
+  const newImg  = document.getElementById('editImg').value.trim();
+
+  // Update this lang
+  const p = Object.values(data[editingLang]).flat().find(x => x.id === id);
+  if (p) {
+    p.name = newName; p.cat = newCat; p.price = newPrice; p.desc = newDesc; p.img = newImg;
+  }
+
+  // Price, cat, img are shared → update other langs too
+  allProductsById(id).forEach(x => {
+    if (x !== p) { x.price = newPrice; x.cat = newCat; x.img = newImg; }
+  });
+
+  saveData();
+  closeModal();
+  render();
+  toast('Değişiklikler kaydedildi.');
+}
+
+// ── Add Product ────────────────────────────────────────────────────────────
+function toggleAddBar() {
+  document.getElementById('addBar').classList.toggle('open');
+}
+
+function addProduct() {
+  const page   = document.getElementById('addPage').value;
+  const cat    = document.getElementById('addCat').value.trim();
+  const nameTr = document.getElementById('addNameTr').value.trim();
+  const nameEn = document.getElementById('addNameEn').value.trim();
+  const descTr = document.getElementById('addDescTr').value.trim();
+  const descEn = document.getElementById('addDescEn').value.trim();
+  const price  = parseInt(document.getElementById('addPrice').value) || 0;
+  const img    = document.getElementById('addImg').value.trim();
+  const lang   = document.getElementById('addLang').value;
+
+  if (!cat || !nameTr) { toast('Kategori ve Türkçe ad zorunludur.', 'error'); return; }
+
+  const id = nextId();
+  const base = { id, active: true, cat, img, price };
+
+  if (lang === 'tr' || lang === 'both') {
+    if (!data.tr[page]) data.tr[page] = [];
+    data.tr[page].push({ ...base, name: nameTr, desc: descTr });
+  }
+  if (lang === 'en' || lang === 'both') {
+    if (!data.en[page]) data.en[page] = [];
+    data.en[page].push({ ...base, name: nameEn || nameTr, desc: descEn || descTr });
+  }
+
+  saveData();
+  // Switch filter to the new page
+  document.getElementById('filterPage').value = page;
+  toggleAddBar();
+  render();
+  toast('Ürün eklendi!');
+}
+
+// ── Export ─────────────────────────────────────────────────────────────────
+function openExport() {
+  const js = `const MENU_DATA = ${JSON.stringify(data, null, 2)};\n`;
+  document.getElementById('exportBox').textContent = js;
+  document.getElementById('exportModal').classList.add('open');
+}
+
+function closeExport() {
+  document.getElementById('exportModal').classList.remove('open');
+}
+
+function copyExport() {
+  const text = document.getElementById('exportBox').textContent;
+  navigator.clipboard.writeText(text).then(() => toast('Kopyalandı!')).catch(() => toast('Kopyalama başarısız.', 'error'));
+}
+
+function downloadExport() {
+  const text = document.getElementById('exportBox').textContent;
+  const a = document.createElement('a');
+  a.href = 'data:text/javascript;charset=utf-8,' + encodeURIComponent(text);
+  a.download = 'menu-data.js';
+  a.click();
+  toast('İndiriliyor...');
+}
+
+// ── Toast ──────────────────────────────────────────────────────────────────
+function toast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (type === 'error' ? ' error' : '');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.className = 'toast', 2800);
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
+loadData();
+render();
+</script>
+</body>
+</html>
