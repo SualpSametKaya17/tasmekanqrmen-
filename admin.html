@@ -8,6 +8,53 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', Arial, sans-serif; background: #111; color: #eee; min-height: 100vh; }
 
+  /* ── LOGIN SCREEN ── */
+  #loginScreen {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #0d0d0d;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #loginScreen.hidden { display: none; }
+  .login-card {
+    background: #1a1a2e; border: 1px solid #c8a951;
+    border-radius: 14px; padding: 44px 40px; width: 100%; max-width: 380px;
+    box-shadow: 0 8px 40px rgba(0,0,0,.7);
+    text-align: center;
+  }
+  .login-card .logo { font-size: 2rem; margin-bottom: 6px; }
+  .login-card h2 { color: #c8a951; font-size: 1.15rem; margin-bottom: 28px; letter-spacing: .04em; }
+  .login-card input[type=password] {
+    width: 100%; padding: 11px 14px; border-radius: 8px;
+    background: #111; border: 1px solid #333; color: #eee;
+    font-size: 1rem; margin-bottom: 14px; text-align: center; letter-spacing: .12em;
+  }
+  .login-card input[type=password]:focus { outline: none; border-color: #c8a951; }
+  .login-card .btn-login {
+    width: 100%; padding: 11px; border-radius: 8px;
+    background: #c8a951; color: #111; font-weight: 700; font-size: 1rem;
+    border: none; cursor: pointer; transition: .15s;
+  }
+  .login-card .btn-login:hover { background: #e0c060; }
+  .login-card .btn-login:disabled { background: #555; color: #888; cursor: not-allowed; }
+  .login-err { color: #e74c3c; font-size: .85rem; margin-top: 10px; min-height: 20px; }
+  .login-warn { color: #f39c12; font-size: .83rem; margin-top: 8px; }
+  .attempt-dots { display: flex; gap: 6px; justify-content: center; margin: 12px 0 0; }
+  .attempt-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #333; transition: background .2s;
+  }
+  .attempt-dot.used { background: #e74c3c; }
+  .lockout-box {
+    margin-top: 18px; background: #1e0a0a; border: 1px solid #c0392b;
+    border-radius: 8px; padding: 14px 10px; color: #e74c3c; font-size: .9rem;
+  }
+  .lockout-box .timer { font-size: 1.5rem; font-weight: 700; margin: 6px 0; letter-spacing: .08em; }
+  .btn-logout {
+    background: none; border: 1px solid #555; color: #aaa; border-radius: 6px;
+    padding: 5px 14px; cursor: pointer; font-size: .8rem; margin-left: 12px;
+  }
+  .btn-logout:hover { border-color: #c8a951; color: #c8a951; }
+
   /* TOP BAR */
   .topbar { background: #1a1a2e; border-bottom: 2px solid #c8a951; padding: 14px 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
   .topbar h1 { font-size: 1.2rem; color: #c8a951; flex-shrink: 0; }
@@ -79,6 +126,24 @@
 </head>
 <body>
 
+<!-- ── LOGIN SCREEN ── -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="logo">🍽</div>
+    <h2>Taşmekan Yönetim Paneli</h2>
+    <input type="password" id="pwdInput" placeholder="Şifre" autocomplete="current-password" onkeydown="if(event.key==='Enter')tryLogin()"/>
+    <button class="btn-login" id="loginBtn" onclick="tryLogin()">Giriş Yap</button>
+    <div class="attempt-dots" id="attemptDots"></div>
+    <div class="login-err" id="loginErr"></div>
+    <div class="login-warn" id="loginWarn"></div>
+    <div id="lockoutBox" class="lockout-box" style="display:none">
+      🔒 Çok fazla yanlış deneme!<br>
+      <div class="timer" id="lockTimer">00:00</div>
+      sonra tekrar deneyin.
+    </div>
+  </div>
+</div>
+
 <!-- TOP BAR -->
 <div class="topbar">
   <h1>🍽 Taşmekan – Menü Yönetim Paneli</h1>
@@ -86,6 +151,7 @@
   <button class="btn btn-green" onclick="toggleAddBar()">+ Ürün Ekle</button>
   <button class="btn btn-gold" onclick="openExport()">⬇ Dışa Aktar</button>
   <button class="btn btn-gray btn-sm" onclick="resetToOriginal()">↺ Orijinale Dön</button>
+  <button class="btn-logout" onclick="logout()">Çıkış</button>
 </div>
 
 <!-- ADD PRODUCT BAR -->
@@ -243,6 +309,131 @@
 
 <script src="assets/js/menu-data.js"></script>
 <script>
+// ════════════════════════════════════════════════════════════
+//  AUTH  –  Şifreyi değiştirmek için: terminalde çalıştır:
+//  şifrenin SHA-256'sını al ve PASSWORD_HASH değerini güncelle.
+//  Örnek (tarayıcı console): hashPwd('YeniŞifre').then(console.log)
+// ════════════════════════════════════════════════════════════
+const PASSWORD_HASH = '5382edf07c20296098dfc71f0057b9e6f7783c890eba86b06a11c09ac325b991'; // varsayılan: Tasmekan2024!
+const MAX_ATTEMPTS  = 5;
+const LOCKOUT_MS    = 30 * 60 * 1000; // 30 dakika
+const SESSION_KEY   = 'tm_auth_session';
+const ATTEMPT_KEY   = 'tm_auth_attempts';
+
+async function hashPwd(pwd) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pwd));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+function getAttemptData() {
+  try { return JSON.parse(localStorage.getItem(ATTEMPT_KEY)) || { count: 0, lockedUntil: 0 }; }
+  catch { return { count: 0, lockedUntil: 0 }; }
+}
+function setAttemptData(d) { localStorage.setItem(ATTEMPT_KEY, JSON.stringify(d)); }
+
+function isSessionValid() {
+  try {
+    const s = JSON.parse(localStorage.getItem(SESSION_KEY));
+    return s && s.exp > Date.now();
+  } catch { return false; }
+}
+
+function createSession() {
+  localStorage.setItem(SESSION_KEY, JSON.stringify({ exp: Date.now() + 4 * 60 * 60 * 1000 })); // 4 saat
+}
+
+function logout() {
+  if (!confirm('Çıkış yapmak istediğinden emin misin?')) return;
+  localStorage.removeItem(SESSION_KEY);
+  location.reload();
+}
+
+let lockTimerInterval = null;
+
+function renderLoginState() {
+  const d = getAttemptData();
+  const dots = document.getElementById('attemptDots');
+  dots.innerHTML = Array.from({length: MAX_ATTEMPTS}, (_,i) =>
+    `<div class="attempt-dot ${i < d.count ? 'used' : ''}"></div>`).join('');
+
+  const remaining = d.lockedUntil - Date.now();
+  if (remaining > 0) {
+    showLockout(remaining);
+  } else {
+    document.getElementById('lockoutBox').style.display = 'none';
+    document.getElementById('loginBtn').disabled = false;
+    document.getElementById('pwdInput').disabled = false;
+    if (d.count > 0) {
+      document.getElementById('loginWarn').textContent =
+        `${MAX_ATTEMPTS - d.count} deneme hakkın kaldı.`;
+    }
+  }
+}
+
+function showLockout(remainingMs) {
+  document.getElementById('lockoutBox').style.display = 'block';
+  document.getElementById('loginBtn').disabled = true;
+  document.getElementById('pwdInput').disabled = true;
+  document.getElementById('loginErr').textContent = '';
+  document.getElementById('loginWarn').textContent = '';
+  clearInterval(lockTimerInterval);
+  lockTimerInterval = setInterval(() => {
+    const left = getAttemptData().lockedUntil - Date.now();
+    if (left <= 0) {
+      clearInterval(lockTimerInterval);
+      setAttemptData({ count: 0, lockedUntil: 0 });
+      renderLoginState();
+      document.getElementById('lockoutBox').style.display = 'none';
+      return;
+    }
+    const m = String(Math.floor(left / 60000)).padStart(2,'0');
+    const s = String(Math.floor((left % 60000) / 1000)).padStart(2,'0');
+    document.getElementById('lockTimer').textContent = `${m}:${s}`;
+  }, 1000);
+  // İlk değeri hemen yaz
+  const m = String(Math.floor(remainingMs / 60000)).padStart(2,'0');
+  const s = String(Math.floor((remainingMs % 60000) / 1000)).padStart(2,'0');
+  document.getElementById('lockTimer').textContent = `${m}:${s}`;
+}
+
+async function tryLogin() {
+  const d = getAttemptData();
+  if (d.lockedUntil > Date.now()) return;
+
+  const pwd = document.getElementById('pwdInput').value;
+  if (!pwd) return;
+
+  const hash = await hashPwd(pwd);
+  if (hash === PASSWORD_HASH) {
+    setAttemptData({ count: 0, lockedUntil: 0 });
+    createSession();
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('pwdInput').value = '';
+  } else {
+    const newCount = d.count + 1;
+    if (newCount >= MAX_ATTEMPTS) {
+      const lockedUntil = Date.now() + LOCKOUT_MS;
+      setAttemptData({ count: newCount, lockedUntil });
+      document.getElementById('loginErr').textContent = 'Hesap kilitlendi!';
+      showLockout(LOCKOUT_MS);
+    } else {
+      setAttemptData({ count: newCount, lockedUntil: 0 });
+      document.getElementById('loginErr').textContent = 'Yanlış şifre!';
+      document.getElementById('pwdInput').value = '';
+    }
+    renderLoginState();
+  }
+}
+
+function initAuth() {
+  if (isSessionValid()) {
+    document.getElementById('loginScreen').classList.add('hidden');
+    return;
+  }
+  renderLoginState();
+  document.getElementById('pwdInput').focus();
+}
+
 // ── State ──────────────────────────────────────────────────────────────────
 const LS_KEY = 'tasmekan_menu_data';
 let data; // working copy
@@ -496,6 +687,7 @@ function toast(msg, type) {
 }
 
 // ── Init ───────────────────────────────────────────────────────────────────
+initAuth();
 loadData();
 render();
 </script>
