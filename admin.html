@@ -5,265 +5,200 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Taşmekan – Yönetim Paneli</title>
 <style>
-:root {
-  --gold:    #ffbe33;
-  --gold-dk: #e69c00;
-  --dark:    #222831;
-  --dark2:   #1a2028;
-  --dark3:   #141a20;
-  --bg:      #0f1318;
-  --surface: #1c2330;
-  --surface2:#243040;
-  --border:  #2e3d4f;
-  --text:    #e8e8e8;
-  --muted:   #8a9ab0;
-  --red:     #e05252;
-  --green:   #3dba74;
+:root{
+  --gold:#e8a800;
+  --gold-lt:#fff3cc;
+  --gold-md:#ffd54f;
+  --bg:#f4f6fa;
+  --surface:#ffffff;
+  --surface2:#f9fafb;
+  --border:#e2e8f0;
+  --border2:#cbd5e1;
+  --text:#1e293b;
+  --muted:#64748b;
+  --muted2:#94a3b8;
+  --red:#ef4444;
+  --red-lt:#fef2f2;
+  --green:#22c55e;
+  --green-lt:#f0fdf4;
+  --blue:#3b82f6;
+  --dark:#1e293b;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 16px rgba(0,0,0,.1);
+  --shadow-lg:0 10px 40px rgba(0,0,0,.15);
+  --radius:10px;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-a { color: var(--gold); }
-
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--dark3); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
 /* ── LOGIN ── */
-#loginScreen {
-  position: fixed; inset: 0; z-index: 9999;
-  background: radial-gradient(ellipse at center, #1a2028 0%, #0a0e12 100%);
-  display: flex; align-items: center; justify-content: center;
-}
-#loginScreen.hidden { display: none; }
-.login-card {
-  background: var(--surface);
-  border: 1px solid var(--gold);
-  border-radius: 16px; padding: 48px 44px;
-  width: 100%; max-width: 400px;
-  box-shadow: 0 0 60px rgba(255,190,51,.08), 0 12px 40px rgba(0,0,0,.6);
-  text-align: center;
-}
-.login-logo { margin-bottom: 10px; }
-.login-logo img { height: 52px; }
-.login-card h2 { color: var(--gold); font-size: 1.05rem; margin-bottom: 30px; letter-spacing: .06em; font-weight: 500; }
-.login-card input[type=password] {
-  width: 100%; padding: 12px 16px; border-radius: 8px;
-  background: var(--dark3); border: 1px solid var(--border); color: var(--text);
-  font-size: 1rem; margin-bottom: 12px; text-align: center; letter-spacing: .15em;
-  transition: border .2s;
-}
-.login-card input[type=password]:focus { outline: none; border-color: var(--gold); }
-.login-card .btn-login {
-  width: 100%; padding: 12px; border-radius: 8px;
-  background: var(--gold); color: #111; font-weight: 700; font-size: 1rem;
-  border: none; cursor: pointer; transition: .15s; letter-spacing: .03em;
-}
-.login-card .btn-login:hover { background: #ffd060; }
-.login-card .btn-login:disabled { background: #444; color: #777; cursor: not-allowed; }
-.login-err  { color: var(--red);  font-size: .85rem; margin-top: 10px; min-height: 20px; }
-.login-warn { color: #f0a500;     font-size: .82rem; margin-top: 6px; }
-.attempt-dots { display: flex; gap: 7px; justify-content: center; margin: 14px 0 0; }
-.attempt-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); transition: background .2s; }
-.attempt-dot.used { background: var(--red); box-shadow: 0 0 6px rgba(224,82,82,.5); }
-.lockout-box {
-  margin-top: 16px; background: rgba(224,82,82,.08); border: 1px solid var(--red);
-  border-radius: 8px; padding: 14px 10px; color: var(--red); font-size: .9rem;
-}
-.lockout-box .timer { font-size: 1.6rem; font-weight: 700; margin: 6px 0; letter-spacing: .1em; color: #fff; }
+#loginScreen{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#1e293b 0%,#334155 100%);display:flex;align-items:center;justify-content:center;padding:16px}
+#loginScreen.hidden{display:none}
+.login-card{background:var(--surface);border-radius:20px;padding:48px 44px;width:100%;max-width:400px;box-shadow:var(--shadow-lg);text-align:center}
+.login-logo{margin-bottom:20px}
+.login-logo img{height:50px;object-fit:contain}
+.login-title{font-size:.8rem;font-weight:700;letter-spacing:.15em;color:var(--muted);text-transform:uppercase;margin-bottom:28px}
+.login-card input[type=password]{width:100%;padding:13px 16px;border-radius:10px;background:var(--surface2);border:2px solid var(--border);color:var(--text);font-size:1rem;margin-bottom:12px;text-align:center;letter-spacing:.2em;transition:border .2s}
+.login-card input[type=password]:focus{outline:none;border-color:var(--gold)}
+.btn-login{width:100%;padding:13px;border-radius:10px;background:var(--dark);color:#fff;font-weight:700;font-size:.95rem;border:none;cursor:pointer;transition:.15s;letter-spacing:.03em}
+.btn-login:hover{background:#334155}
+.btn-login:disabled{background:var(--border2);color:var(--muted2);cursor:not-allowed}
+.login-err{color:var(--red);font-size:.83rem;margin-top:8px;min-height:18px}
+.login-warn{color:#f59e0b;font-size:.8rem;margin-top:4px}
+.attempt-dots{display:flex;gap:7px;justify-content:center;margin:14px 0 0}
+.attempt-dot{width:9px;height:9px;border-radius:50%;background:var(--border);transition:background .2s}
+.attempt-dot.used{background:var(--red)}
+.lockout-box{margin-top:16px;background:var(--red-lt);border:1px solid #fecaca;border-radius:10px;padding:14px;color:var(--red);font-size:.88rem}
+.lockout-box .timer{font-size:1.8rem;font-weight:800;margin:6px 0;color:var(--red);letter-spacing:.08em}
 
 /* ── BUTTONS ── */
-.btn { padding: 8px 18px; border: none; border-radius: 7px; cursor: pointer; font-size: .85rem; font-weight: 600; transition: .15s; display: inline-flex; align-items: center; gap: 5px; }
-.btn-gold  { background: var(--gold);  color: #111; }
-.btn-gold:hover  { background: #ffd060; }
-.btn-red   { background: var(--red);   color: #fff; }
-.btn-red:hover   { background: #f06060; }
-.btn-green { background: var(--green); color: #fff; }
-.btn-green:hover { background: #4ecf84; }
-.btn-gray  { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-.btn-gray:hover  { background: #2e3f52; }
-.btn-outline { background: transparent; color: var(--gold); border: 1px solid var(--gold); }
-.btn-outline:hover { background: rgba(255,190,51,.1); }
-.btn-sm { padding: 5px 11px; font-size: .78rem; }
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:600;transition:.15s;white-space:nowrap}
+.btn-dark{background:var(--dark);color:#fff}
+.btn-dark:hover{background:#334155}
+.btn-gold{background:var(--gold);color:#fff}
+.btn-gold:hover{background:#d09700}
+.btn-red{background:var(--red);color:#fff}
+.btn-red:hover{background:#dc2626}
+.btn-green{background:var(--green);color:#fff}
+.btn-green:hover{background:#16a34a}
+.btn-ghost{background:transparent;color:var(--muted);border:1.5px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text);background:var(--surface2)}
+.btn-sm{padding:5px 11px;font-size:.76rem;border-radius:7px}
 
-/* ── TOP BAR ── */
-.topbar {
-  background: var(--dark2);
-  border-bottom: 2px solid var(--gold);
-  padding: 12px 24px;
-  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-  position: sticky; top: 0; z-index: 50;
-}
-.topbar-brand { display: flex; align-items: center; gap: 10px; }
-.topbar-brand img { height: 38px; }
-.topbar-brand span { color: var(--gold); font-size: 1.05rem; font-weight: 600; letter-spacing: .03em; }
-.topbar .spacer { flex: 1; }
-.btn-logout { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 7px; padding: 6px 14px; cursor: pointer; font-size: .8rem; transition: .15s; }
-.btn-logout:hover { border-color: var(--gold); color: var(--gold); }
+/* ── TOPBAR ── */
+.topbar{background:var(--dark);padding:0 24px;height:58px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.topbar-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.topbar-brand img{height:36px;object-fit:contain;filter:brightness(1.1)}
+.topbar-brand span{color:#fff;font-size:1rem;font-weight:600;white-space:nowrap}
+.topbar .spacer{flex:1}
+.topbar-actions{display:flex;gap:8px;align-items:center}
+.btn-topbar{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#e2e8f0;border-radius:8px;padding:7px 14px;cursor:pointer;font-size:.8rem;font-weight:600;transition:.15s}
+.btn-topbar:hover{background:rgba(255,255,255,.15);color:#fff}
+.btn-topbar.gold{background:var(--gold);border-color:var(--gold);color:#fff}
+.btn-topbar.gold:hover{background:#d09700}
 
 /* ── TAB NAV ── */
-.tab-nav {
-  background: var(--dark2);
-  border-bottom: 1px solid var(--border);
-  padding: 0 24px;
-  display: flex; gap: 2px; overflow-x: auto;
-}
-.tab-btn {
-  padding: 11px 18px; border: none; background: none; color: var(--muted);
-  font-size: .85rem; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent;
-  white-space: nowrap; transition: .15s; margin-bottom: -1px;
-}
-.tab-btn:hover { color: var(--text); }
-.tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+.tab-nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;gap:0;box-shadow:var(--shadow)}
+.tab-btn{padding:14px 20px;border:none;background:none;color:var(--muted);font-size:.85rem;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.15s;white-space:nowrap}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--dark);border-bottom-color:var(--gold)}
 
-/* ── SECTION PANELS ── */
-.panel { display: none; }
-.panel.active { display: block; }
+/* ── PANEL ── */
+.panel{display:none}
+.panel.active{display:block}
 
-/* ── FILTER BAR ── */
-.filterbar {
-  background: var(--dark3); padding: 12px 24px;
-  display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
-  border-bottom: 1px solid var(--border);
-}
-.filterbar label { font-size: .78rem; color: var(--muted); white-space: nowrap; }
-.filterbar select, .filterbar input[type=text] {
-  background: var(--surface); border: 1px solid var(--border); color: var(--text);
-  border-radius: 7px; padding: 7px 10px; font-size: .85rem; transition: border .2s;
-}
-.filterbar input[type=text] { width: 240px; }
-.filterbar select:focus, .filterbar input:focus { outline: none; border-color: var(--gold); }
-.count-badge { background: var(--gold); color: #111; padding: 3px 11px; border-radius: 12px; font-size: .75rem; font-weight: 700; margin-left: auto; }
+/* ── FILTERBAR ── */
+.filterbar{background:var(--surface);padding:14px 24px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--border);box-shadow:var(--shadow)}
+.filterbar label{font-size:.75rem;color:var(--muted);font-weight:600;white-space:nowrap}
+.filterbar select,.filterbar input[type=text]{background:var(--surface2);border:1.5px solid var(--border);color:var(--text);border-radius:8px;padding:7px 10px;font-size:.83rem;transition:border .2s}
+.filterbar input[type=text]{width:220px}
+.filterbar select:focus,.filterbar input:focus{outline:none;border-color:var(--gold)}
+.count-badge{background:var(--gold-lt);color:var(--gold);border:1px solid var(--gold-md);padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700;margin-left:auto;white-space:nowrap}
 
-/* ── ADD PRODUCT PANEL ── */
-.add-panel { background: var(--dark3); border-bottom: 1px solid var(--border); overflow: hidden; max-height: 0; transition: max-height .3s ease; }
-.add-panel.open { max-height: 700px; }
-.add-panel-inner { padding: 20px 24px; }
-.add-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.add-panel-header strong { color: var(--gold); font-size: .95rem; }
-.add-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-@media(max-width:900px){ .add-grid { grid-template-columns: 1fr 1fr; } }
-@media(max-width:540px){ .add-grid { grid-template-columns: 1fr; } }
-.add-grid .span2 { grid-column: span 2; }
-@media(max-width:540px){ .add-grid .span2 { grid-column: span 1; } }
+/* ── ADD PANEL ── */
+.add-panel{background:var(--surface);border-bottom:1px solid var(--border);overflow:hidden;max-height:0;transition:max-height .35s ease}
+.add-panel.open{max-height:800px}
+.add-panel-inner{padding:20px 24px}
+.add-panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.add-panel-title{font-size:.92rem;font-weight:700;color:var(--dark)}
+.add-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:900px){.add-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:540px){.add-grid{grid-template-columns:1fr}}
+.span2{grid-column:span 2}
+@media(max-width:540px){.span2{grid-column:span 1}}
 
-/* ── FORM ROWS ── */
-.form-row { margin-bottom: 0; }
-.form-row label { display: block; font-size: .75rem; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .04em; }
-.form-row input, .form-row textarea, .form-row select {
-  width: 100%; background: var(--surface); border: 1px solid var(--border); color: var(--text);
-  border-radius: 7px; padding: 8px 11px; font-size: .88rem; transition: border .2s;
-}
-.form-row textarea { height: 76px; resize: vertical; }
-.form-row input:focus, .form-row textarea:focus, .form-row select:focus { outline: none; border-color: var(--gold); }
-.form-row .img-preview { width: 100%; height: 130px; object-fit: cover; border-radius: 7px; margin-top: 8px; border: 1px solid var(--border); }
+/* ── FORM ── */
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group label{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.form-group input,.form-group textarea,.form-group select{background:var(--surface2);border:1.5px solid var(--border);color:var(--text);border-radius:8px;padding:9px 11px;font-size:.85rem;transition:border .2s}
+.form-group textarea{height:72px;resize:vertical}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:var(--gold);background:#fff}
+.img-preview{width:100%;height:130px;object-fit:cover;border-radius:8px;margin-top:8px;border:1.5px solid var(--border)}
 
 /* ── TABLE ── */
-.table-wrap { overflow-x: auto; padding: 0 16px 16px; }
-table { width: 100%; border-collapse: collapse; font-size: .86rem; margin-top: 12px; }
-th {
-  background: var(--dark2); color: var(--gold);
-  text-align: left; padding: 10px 13px;
-  font-size: .72rem; text-transform: uppercase; letter-spacing: .07em;
-  position: sticky; top: 56px; z-index: 1;
-  border-bottom: 1px solid var(--border);
-}
-td { padding: 9px 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-tr:hover td { background: rgba(255,190,51,.03); }
-tr.inactive td { opacity: .35; }
-
-.img-thumb { width: 56px; height: 42px; object-fit: cover; border-radius: 5px; border: 1px solid var(--border); }
-.img-placeholder { width: 56px; height: 42px; background: var(--surface2); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: .68rem; color: var(--border); }
-.status-badge { display: inline-block; padding: 3px 9px; border-radius: 10px; font-size: .72rem; font-weight: 700; }
-.status-active   { background: rgba(61,186,116,.15); color: var(--green); border: 1px solid rgba(61,186,116,.3); }
-.status-inactive { background: rgba(100,100,100,.15); color: var(--muted); border: 1px solid var(--border); }
-.tag-cat { display: inline-block; background: rgba(255,190,51,.08); border: 1px solid rgba(255,190,51,.25); color: var(--gold); border-radius: 10px; padding: 2px 9px; font-size: .73rem; font-weight: 600; }
-.price-cell { font-weight: 700; color: var(--gold); white-space: nowrap; }
-.actions-cell { white-space: nowrap; display: flex; gap: 5px; }
+.table-container{padding:16px 24px 8px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.84rem}
+thead th{background:var(--surface2);color:var(--muted);text-align:left;padding:10px 13px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;border-bottom:2px solid var(--border);white-space:nowrap}
+tbody td{padding:10px 13px;border-bottom:1px solid var(--border);vertical-align:middle}
+tbody tr:hover td{background:#fafbfc}
+tbody tr.inactive td{opacity:.4}
+tbody tr:last-child td{border-bottom:none}
+.img-thumb{width:52px;height:40px;object-fit:cover;border-radius:6px;border:1px solid var(--border)}
+.img-placeholder{width:52px;height:40px;background:var(--surface2);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--muted2);font-size:.7rem;border:1px dashed var(--border2)}
+.tag-cat{display:inline-block;background:var(--gold-lt);color:var(--gold);border:1px solid var(--gold-md);border-radius:20px;padding:2px 10px;font-size:.72rem;font-weight:700}
+.status-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700}
+.status-active{background:var(--green-lt);color:#16a34a}
+.status-active::before{content:'●';font-size:.6rem}
+.status-inactive{background:#f8fafc;color:var(--muted2);border:1px solid var(--border)}
+.status-inactive::before{content:'○';font-size:.6rem}
+.price-cell{font-weight:700;color:var(--dark);white-space:nowrap}
+.actions-cell{display:flex;gap:5px;flex-wrap:nowrap}
+.name-cell{font-weight:600;max-width:180px}
+.desc-cell{color:var(--muted);font-size:.78rem;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* ── PAGINATION ── */
-.pagination { display: flex; align-items: center; gap: 6px; padding: 14px 24px; justify-content: center; flex-wrap: wrap; border-top: 1px solid var(--border); }
-.page-btn {
-  min-width: 34px; height: 34px; border: 1px solid var(--border);
-  background: var(--surface); color: var(--text); border-radius: 7px;
-  cursor: pointer; font-size: .82rem; font-weight: 600; transition: .15s;
-  display: flex; align-items: center; justify-content: center; padding: 0 10px;
-}
-.page-btn:hover { border-color: var(--gold); color: var(--gold); }
-.page-btn.active { background: var(--gold); color: #111; border-color: var(--gold); }
-.page-btn:disabled { opacity: .35; cursor: not-allowed; }
-.page-info { color: var(--muted); font-size: .8rem; padding: 0 4px; }
+.pagination-wrap{padding:14px 24px;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;border-top:1px solid var(--border);background:var(--surface)}
+.pg-btn{min-width:34px;height:34px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:600;display:inline-flex;align-items:center;justify-content:center;padding:0 10px;transition:.15s}
+.pg-btn:hover:not(:disabled){border-color:var(--gold);color:var(--gold)}
+.pg-btn.active{background:var(--dark);color:#fff;border-color:var(--dark)}
+.pg-btn:disabled{opacity:.3;cursor:not-allowed}
+.pg-sep{color:var(--muted2);padding:0 2px}
+.pg-info{color:var(--muted);font-size:.78rem}
 
 /* ── MODAL ── */
-.modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
-.modal-bg.open { display: flex; }
-.modal {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 12px; width: 100%; max-width: 560px;
-  max-height: 92vh; overflow-y: auto; padding: 28px; position: relative;
-  box-shadow: 0 20px 60px rgba(0,0,0,.5);
-}
-.modal h2 { color: var(--gold); margin-bottom: 22px; font-size: 1.05rem; display: flex; align-items: center; gap: 8px; }
-.modal .close-btn { position: absolute; top: 16px; right: 18px; background: none; border: none; color: var(--muted); font-size: 1.3rem; cursor: pointer; line-height: 1; }
-.modal .close-btn:hover { color: var(--text); }
-.modal-footer { display: flex; gap: 10px; margin-top: 22px; justify-content: flex-end; }
-.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-@media(max-width:480px){ .modal-grid { grid-template-columns: 1fr; } }
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(2px)}
+.modal-bg.open{display:flex}
+.modal{background:var(--surface);border-radius:16px;width:100%;max-width:540px;max-height:92vh;overflow-y:auto;padding:28px;position:relative;box-shadow:var(--shadow-lg)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.modal-title{font-size:1.05rem;font-weight:700;color:var(--dark)}
+.close-btn{background:var(--surface2);border:none;color:var(--muted);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:.15s}
+.close-btn:hover{background:var(--border);color:var(--text)}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:460px){.modal-grid{grid-template-columns:1fr}}
+.full{grid-column:span 2}
+@media(max-width:460px){.full{grid-column:span 1}}
+.modal-footer{display:flex;gap:10px;margin-top:22px;justify-content:flex-end}
 
 /* ── CATEGORY PANEL ── */
-.cat-page-select { padding: 14px 24px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-.cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; padding: 16px 24px; }
-.cat-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 10px; padding: 14px 16px;
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  transition: border .2s;
-}
-.cat-card:hover { border-color: rgba(255,190,51,.4); }
-.cat-card-name { font-size: .88rem; font-weight: 600; color: var(--text); }
-.cat-card-count { font-size: .72rem; color: var(--muted); margin-top: 2px; }
-.cat-card-actions { display: flex; gap: 6px; flex-shrink: 0; }
-.cat-add-row { padding: 0 24px 20px; display: flex; gap: 10px; flex-wrap: wrap; }
-.cat-add-row input { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 7px; padding: 8px 12px; font-size: .88rem; width: 220px; }
-.cat-add-row input:focus { outline: none; border-color: var(--gold); }
+.cat-toolbar{padding:16px 24px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--border);background:var(--surface)}
+.cat-add-row{padding:16px 24px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;background:var(--surface2);border-bottom:1px solid var(--border)}
+.cat-add-row input{background:var(--surface);border:1.5px solid var(--border);color:var(--text);border-radius:8px;padding:9px 12px;font-size:.85rem;width:220px}
+.cat-add-row input:focus{outline:none;border-color:var(--gold)}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;padding:16px 24px}
+.cat-card{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;transition:.15s;box-shadow:var(--shadow)}
+.cat-card:hover{border-color:var(--gold-md);box-shadow:0 4px 12px rgba(232,168,0,.1)}
+.cat-name{font-size:.9rem;font-weight:700;color:var(--dark)}
+.cat-count{font-size:.72rem;color:var(--muted);margin-top:2px}
+.cat-actions{display:flex;gap:5px}
 
 /* ── EXPORT ── */
-.code-box {
-  background: var(--dark3); border: 1px solid var(--border);
-  border-radius: 7px; padding: 12px; font-family: 'Consolas', monospace;
-  font-size: .75rem; white-space: pre-wrap; max-height: 280px; overflow-y: auto;
-  color: #7ec8a0; line-height: 1.5;
-}
+.code-box{background:#0f172a;border:none;border-radius:10px;padding:14px;font-family:'Consolas',monospace;font-size:.72rem;white-space:pre-wrap;max-height:260px;overflow-y:auto;color:#7dd3fc;line-height:1.6}
 
 /* ── TOAST ── */
-.toast {
-  position: fixed; bottom: 24px; right: 24px;
-  background: var(--dark2); border-left: 3px solid var(--green);
-  color: var(--text); padding: 12px 20px; border-radius: 8px;
-  font-size: .88rem; font-weight: 600; z-index: 9000;
-  opacity: 0; transition: opacity .25s; pointer-events: none;
-  box-shadow: 0 6px 24px rgba(0,0,0,.4);
-}
-.toast.show { opacity: 1; }
-.toast.error { border-left-color: var(--red); }
-.toast.warn  { border-left-color: var(--gold); }
+.toast{position:fixed;bottom:24px;right:24px;background:var(--dark);color:#fff;padding:12px 18px;border-radius:10px;font-size:.85rem;font-weight:600;z-index:9999;opacity:0;transition:opacity .25s;pointer-events:none;box-shadow:var(--shadow-md);display:flex;align-items:center;gap:8px;max-width:320px}
+.toast.show{opacity:1}
+.toast.error{background:var(--red)}
+.toast.warn{background:#f59e0b}
+.toast.success{background:#16a34a}
 
-/* ── DIVIDER ── */
-.section-divider { display: flex; align-items: center; gap: 10px; padding: 10px 24px 6px; }
-.section-divider span { color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; white-space: nowrap; }
-.section-divider::before, .section-divider::after { content:''; flex:1; height:1px; background: var(--border); }
+/* ── SECTION HEADER ── */
+.sec-header{padding:14px 24px 10px;display:flex;align-items:center;justify-content:space-between}
+.sec-title{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
 </style>
 </head>
 <body>
 
-<!-- ═══════════ LOGIN ═══════════ -->
+<!-- LOGIN -->
 <div id="loginScreen">
   <div class="login-card">
     <div class="login-logo">
       <img src="assets/images/Taşmekan Logo Beyaz.webp" alt="Taşmekan" onerror="this.style.display='none'">
     </div>
-    <h2>YÖNETİM PANELİ</h2>
-    <input type="password" id="pwdInput" placeholder="••••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')tryLogin()"/>
+    <div class="login-title">Yönetim Paneli Girişi</div>
+    <input type="password" id="pwdInput" placeholder="Şifrenizi girin" autocomplete="current-password"/>
     <button class="btn-login" id="loginBtn" onclick="tryLogin()">Giriş Yap</button>
     <div class="attempt-dots" id="attemptDots"></div>
     <div class="login-err"  id="loginErr"></div>
@@ -276,37 +211,37 @@ tr.inactive td { opacity: .35; }
   </div>
 </div>
 
-<!-- ═══════════ TOP BAR ═══════════ -->
-<div class="topbar">
+<!-- TOPBAR -->
+<header class="topbar">
   <div class="topbar-brand">
     <img src="assets/images/Taşmekan Logo Beyaz.webp" alt="" onerror="this.style.display='none'">
-    <span>Yönetim Paneli</span>
+    <span>Yönetim</span>
   </div>
   <div class="spacer"></div>
-  <button class="btn btn-gold btn-sm" onclick="openExport()">⬇ Dışa Aktar</button>
-  <button class="btn btn-gray btn-sm" onclick="resetToOriginal()">↺ Sıfırla</button>
-  <button class="btn-logout" onclick="logout()">Çıkış ↩</button>
-</div>
+  <div class="topbar-actions">
+    <button class="btn-topbar gold" onclick="openExport()">⬇ Dışa Aktar</button>
+    <button class="btn-topbar" onclick="resetToOriginal()">↺ Sıfırla</button>
+    <button class="btn-topbar" onclick="logout()">Çıkış ↩</button>
+  </div>
+</header>
 
-<!-- ═══════════ TAB NAV ═══════════ -->
+<!-- TAB NAV -->
 <nav class="tab-nav" id="tabNav">
-  <button class="tab-btn active" onclick="switchTab('products')">🍴 Ürünler</button>
-  <button class="tab-btn"        onclick="switchTab('categories')">🏷 Kategoriler</button>
+  <button class="tab-btn active" data-tab="products"    onclick="switchTab(this)">🍴 Ürünler</button>
+  <button class="tab-btn"        data-tab="categories"  onclick="switchTab(this)">🏷 Kategoriler</button>
 </nav>
 
-<!-- ═══════════════════════════════════
-     PANEL: ÜRÜNLER
-═══════════════════════════════════ -->
+<!-- ══════════ PANEL: ÜRÜNLER ══════════ -->
 <div class="panel active" id="panel-products">
 
-  <!-- Add product bar -->
+  <!-- Add product collapsible -->
   <div class="add-panel" id="addBar">
     <div class="add-panel-inner">
       <div class="add-panel-header">
-        <strong>✚ Yeni Ürün Ekle</strong>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <label style="font-size:.78rem;color:var(--muted)">Dil:</label>
-          <select id="addLang" style="background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:6px 10px;font-size:.85rem;">
+        <div class="add-panel-title">Yeni Ürün Ekle</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <label style="font-size:.75rem;color:var(--muted);font-weight:600">Dil:</label>
+          <select id="addLang" style="background:var(--surface2);border:1.5px solid var(--border);color:var(--text);border-radius:8px;padding:6px 10px;font-size:.82rem">
             <option value="both">TR + EN</option>
             <option value="tr">Yalnız TR</option>
             <option value="en">Yalnız EN</option>
@@ -314,9 +249,9 @@ tr.inactive td { opacity: .35; }
         </div>
       </div>
       <div class="add-grid">
-        <div class="form-row">
+        <div class="form-group">
           <label>Menü Sayfası</label>
-          <select id="addPage" onchange="populateCatDropdown('addCat', this.value)">
+          <select id="addPage" onchange="populateCatDropdown('addCatSel', this.value)">
             <option value="yiyecekler">Yiyecekler</option>
             <option value="icecekler">İçecekler</option>
             <option value="alkoller">Alkoller</option>
@@ -324,52 +259,53 @@ tr.inactive td { opacity: .35; }
             <option value="nargile">Nargileler</option>
           </select>
         </div>
-        <div class="form-row">
+        <div class="form-group">
           <label>Kategori</label>
-          <select id="addCat"></select>
+          <select id="addCatSel"></select>
         </div>
-        <div class="form-row">
+        <div class="form-group">
           <label>Fiyat (TL)</label>
           <input type="number" id="addPrice" placeholder="350"/>
         </div>
-        <div class="form-row">
+        <div class="form-group">
           <label>Ürün Adı (TR)</label>
           <input type="text" id="addNameTr" placeholder="Türkçe ad"/>
         </div>
-        <div class="form-row">
+        <div class="form-group">
           <label>Ürün Adı (EN)</label>
           <input type="text" id="addNameEn" placeholder="İngilizce ad"/>
         </div>
-        <div class="form-row">
-          <label>Görsel yolu <small style="color:var(--muted);font-size:.7rem">(assets/images/ sonrası)</small></label>
-          <input type="text" id="addImg" placeholder="Menü/Başlangıçlar/urun.webp"/>
+        <div class="form-group">
+          <label>Görsel <small style="font-weight:400;text-transform:none;letter-spacing:0">(assets/images/ sonrası)</small></label>
+          <input type="text" id="addImg" placeholder="Menü/Kategori/urun.webp"/>
         </div>
-        <div class="form-row span2">
+        <div class="form-group span2">
           <label>Açıklama (TR)</label>
           <input type="text" id="addDescTr" placeholder="Türkçe açıklama"/>
         </div>
-        <div class="form-row span2">
+        <div class="form-group span2">
           <label>Açıklama (EN)</label>
           <input type="text" id="addDescEn" placeholder="İngilizce açıklama"/>
         </div>
       </div>
-      <div style="display:flex;gap:10px;margin-top:16px;">
-        <button class="btn btn-gold" onclick="addProduct()">✚ Ekle</button>
-        <button class="btn btn-gray" onclick="toggleAddBar()">İptal</button>
+      <div style="display:flex;gap:10px;margin-top:18px">
+        <button class="btn btn-dark" onclick="addProduct()">✚ Ekle</button>
+        <button class="btn btn-ghost" onclick="closeAddBar()">İptal</button>
       </div>
     </div>
   </div>
 
   <!-- Filter bar -->
   <div class="filterbar">
-    <button class="btn btn-gold btn-sm" onclick="toggleAddBar()" style="margin-right:4px;">+ Ürün Ekle</button>
+    <button class="btn btn-dark btn-sm" onclick="openAddBar()">✚ Ürün Ekle</button>
+    <div style="width:1px;height:24px;background:var(--border);margin:0 4px"></div>
     <label>Dil:</label>
-    <select id="filterLang" onchange="currentPage=1;render()">
+    <select id="filterLang" onchange="resetPage()">
       <option value="tr">Türkçe</option>
       <option value="en">İngilizce</option>
     </select>
     <label>Sayfa:</label>
-    <select id="filterPage" onchange="currentPage=1;render()">
+    <select id="filterPage" onchange="resetPage()">
       <option value="yiyecekler">Yiyecekler</option>
       <option value="icecekler">İçecekler</option>
       <option value="alkoller">Alkoller</option>
@@ -377,25 +313,25 @@ tr.inactive td { opacity: .35; }
       <option value="nargile">Nargileler</option>
     </select>
     <label>Kategori:</label>
-    <select id="filterCat" onchange="currentPage=1;render()">
+    <select id="filterCat" onchange="resetPage()">
       <option value="">Tümü</option>
     </select>
     <label>Durum:</label>
-    <select id="filterStatus" onchange="currentPage=1;render()">
+    <select id="filterStatus" onchange="resetPage()">
       <option value="all">Tümü</option>
       <option value="active">Aktif</option>
       <option value="inactive">İnaktif</option>
     </select>
-    <input type="text" id="searchBox" placeholder="🔍  Ürün adı, fiyat..." oninput="currentPage=1;render()"/>
+    <input type="text" id="searchBox" placeholder="🔍 Ürün adı, fiyat..." oninput="resetPage()"/>
     <span class="count-badge" id="countBadge">0 ürün</span>
   </div>
 
   <!-- Table -->
-  <div class="table-wrap">
+  <div class="table-container">
     <table>
       <thead>
         <tr>
-          <th style="width:70px">Görsel</th>
+          <th>Görsel</th>
           <th>Ürün Adı</th>
           <th>Kategori</th>
           <th>Açıklama</th>
@@ -409,19 +345,17 @@ tr.inactive td { opacity: .35; }
   </div>
 
   <!-- Pagination -->
-  <div class="pagination" id="pagination"></div>
+  <div class="pagination-wrap" id="paginationWrap"></div>
 
 </div><!-- /panel-products -->
 
 
-<!-- ═══════════════════════════════════
-     PANEL: KATEGORİLER
-═══════════════════════════════════ -->
+<!-- ══════════ PANEL: KATEGORİLER ══════════ -->
 <div class="panel" id="panel-categories">
 
-  <div class="cat-page-select">
-    <label style="font-size:.78rem;color:var(--muted)">Menü Sayfası:</label>
-    <select id="catFilterPage" onchange="renderCategories()" style="background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:7px 12px;font-size:.88rem;">
+  <div class="cat-toolbar">
+    <label style="font-size:.78rem;color:var(--muted);font-weight:600">Menü Sayfası:</label>
+    <select id="catFilterPage" onchange="renderCategories()" style="background:var(--surface2);border:1.5px solid var(--border);color:var(--text);border-radius:8px;padding:8px 12px;font-size:.85rem">
       <option value="yiyecekler">Yiyecekler</option>
       <option value="icecekler">İçecekler</option>
       <option value="alkoller">Alkoller</option>
@@ -430,85 +364,95 @@ tr.inactive td { opacity: .35; }
     </select>
   </div>
 
-  <div class="section-divider"><span>Yeni Kategori Ekle</span></div>
   <div class="cat-add-row">
-    <input type="text" id="newCatName" placeholder="Kategori adı (örn: denizürünleri)"/>
-    <button class="btn btn-gold" onclick="addCategory()">✚ Ekle</button>
+    <div class="form-group" style="margin:0">
+      <label style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Yeni Kategori Adı</label>
+      <input type="text" id="newCatName" placeholder="örn: denizürünleri" onkeydown="if(event.key==='Enter')addCategory()"/>
+    </div>
+    <button class="btn btn-dark" onclick="addCategory()">✚ Ekle</button>
   </div>
 
-  <div class="section-divider"><span>Mevcut Kategoriler</span></div>
+  <div class="sec-header">
+    <span class="sec-title" id="catSectionTitle">Mevcut Kategoriler</span>
+  </div>
   <div class="cat-grid" id="catGrid"></div>
 
 </div><!-- /panel-categories -->
 
 
-<!-- ═══════════ EDIT MODAL ═══════════ -->
+<!-- ══════════ EDIT MODAL ══════════ -->
 <div class="modal-bg" id="editModal">
   <div class="modal">
-    <button class="close-btn" onclick="closeModal()">✕</button>
-    <h2>✏ Ürün Düzenle</h2>
+    <div class="modal-header">
+      <div class="modal-title">✏ Ürün Düzenle</div>
+      <button class="close-btn" onclick="closeEditModal()">✕</button>
+    </div>
     <input type="hidden" id="editId"/>
     <div class="modal-grid">
-      <div class="form-row" style="grid-column:span 2">
+      <div class="form-group full">
         <label>Ürün Adı</label>
         <input type="text" id="editName"/>
       </div>
-      <div class="form-row">
+      <div class="form-group">
         <label>Kategori</label>
         <select id="editCat"></select>
       </div>
-      <div class="form-row">
+      <div class="form-group">
         <label>Fiyat (TL)</label>
         <input type="number" id="editPrice"/>
       </div>
-      <div class="form-row" style="grid-column:span 2">
+      <div class="form-group full">
         <label>Açıklama</label>
         <textarea id="editDesc"></textarea>
       </div>
-      <div class="form-row" style="grid-column:span 2">
-        <label>Görsel yolu <small style="color:var(--muted);font-size:.7rem">(assets/images/ sonrası)</small></label>
+      <div class="form-group full">
+        <label>Görsel <small style="font-weight:400;text-transform:none;letter-spacing:0">(assets/images/ sonrası)</small></label>
         <input type="text" id="editImg" oninput="updateImgPreview()"/>
         <img id="editImgPreview" class="img-preview" src="" alt="" style="display:none"/>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-gray" onclick="closeModal()">İptal</button>
-      <button class="btn btn-gold" onclick="saveEdit()">💾 Kaydet</button>
+      <button class="btn btn-ghost" onclick="closeEditModal()">İptal</button>
+      <button class="btn btn-dark" onclick="saveEdit()">💾 Kaydet</button>
     </div>
   </div>
 </div>
 
-<!-- ═══════════ EDIT CATEGORY MODAL ═══════════ -->
+<!-- ══════════ EDIT CATEGORY MODAL ══════════ -->
 <div class="modal-bg" id="editCatModal">
-  <div class="modal" style="max-width:380px;">
-    <button class="close-btn" onclick="closeCatModal()">✕</button>
-    <h2>🏷 Kategori Düzenle</h2>
+  <div class="modal" style="max-width:380px">
+    <div class="modal-header">
+      <div class="modal-title">🏷 Kategori Düzenle</div>
+      <button class="close-btn" onclick="closeCatModal()">✕</button>
+    </div>
     <input type="hidden" id="editCatOld"/>
     <input type="hidden" id="editCatPage"/>
-    <div class="form-row" style="margin-bottom:20px;">
+    <div class="form-group">
       <label>Kategori Adı</label>
       <input type="text" id="editCatNew"/>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-gray" onclick="closeCatModal()">İptal</button>
-      <button class="btn btn-gold" onclick="saveCatEdit()">💾 Kaydet</button>
+      <button class="btn btn-ghost" onclick="closeCatModal()">İptal</button>
+      <button class="btn btn-dark" onclick="saveCatEdit()">💾 Kaydet</button>
     </div>
   </div>
 </div>
 
-<!-- ═══════════ EXPORT MODAL ═══════════ -->
+<!-- ══════════ EXPORT MODAL ══════════ -->
 <div class="modal-bg" id="exportModal">
-  <div class="modal" style="max-width:680px;">
-    <button class="close-btn" onclick="closeExport()">✕</button>
-    <h2>⬇ Dışa Aktar</h2>
-    <p style="color:var(--muted);font-size:.83rem;margin-bottom:12px;">
-      İndirilen dosyayı <code style="color:var(--gold)">assets/js/menu-data.js</code> ile değiştirip Git'e push edin.
+  <div class="modal" style="max-width:660px">
+    <div class="modal-header">
+      <div class="modal-title">⬇ Dışa Aktar</div>
+      <button class="close-btn" onclick="closeExport()">✕</button>
+    </div>
+    <p style="color:var(--muted);font-size:.83rem;margin-bottom:12px">
+      İndirilen dosyayı <code style="background:var(--gold-lt);color:var(--gold);padding:2px 6px;border-radius:4px;font-size:.82rem">assets/js/menu-data.js</code> ile değiştirip Git'e push edin.
     </p>
     <div class="code-box" id="exportBox"></div>
     <div class="modal-footer">
-      <button class="btn btn-gray" onclick="closeExport()">Kapat</button>
-      <button class="btn btn-outline" onclick="copyExport()">📋 Kopyala</button>
-      <button class="btn btn-gold" onclick="downloadExport()">⬇ İndir</button>
+      <button class="btn btn-ghost" onclick="closeExport()">Kapat</button>
+      <button class="btn btn-ghost" onclick="copyExport()">📋 Kopyala</button>
+      <button class="btn btn-dark" onclick="downloadExport()">⬇ İndir</button>
     </div>
   </div>
 </div>
@@ -517,478 +461,418 @@ tr.inactive td { opacity: .35; }
 
 <script src="assets/js/menu-data.js"></script>
 <script>
-// ════════════════════════════════════════════════════════
-//  AUTH
-//  Şifreyi değiştirmek: tarayıcı console'da:
-//    hashPwd('YeniŞifre').then(console.log)
-//  → çıkan değeri PASSWORD_HASH'e yapıştır.
-// ════════════════════════════════════════════════════════
-const PASSWORD_HASH = '5382edf07c20296098dfc71f0057b9e6f7783c890eba86b06a11c09ac325b991'; // Tasmekan2024!
+// ═══ AUTH ════════════════════════════════════════════════
+// Şifreyi değiştirmek → console: hashPwd('YeniŞifre').then(console.log)
+const PASSWORD_HASH = '5382edf07c20296098dfc71f0057b9e6f7783c890eba86b06a11c09ac325b991';
 const MAX_ATTEMPTS  = 5;
 const LOCKOUT_MS    = 30 * 60 * 1000;
-const SESSION_KEY   = 'tm_auth_session';
-const ATTEMPT_KEY   = 'tm_auth_attempts';
+const SESSION_KEY   = 'tm_session';
+const ATTEMPT_KEY   = 'tm_attempts';
 
 async function hashPwd(pwd) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pwd));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
-function getAttemptData() {
-  try { return JSON.parse(localStorage.getItem(ATTEMPT_KEY)) || {count:0, lockedUntil:0}; }
-  catch { return {count:0, lockedUntil:0}; }
+function getAttempts() {
+  try { return JSON.parse(localStorage.getItem(ATTEMPT_KEY))||{count:0,lockedUntil:0}; }
+  catch{ return {count:0,lockedUntil:0}; }
 }
-function setAttemptData(d) { localStorage.setItem(ATTEMPT_KEY, JSON.stringify(d)); }
-function isSessionValid() {
-  try { const s = JSON.parse(localStorage.getItem(SESSION_KEY)); return s && s.exp > Date.now(); }
-  catch { return false; }
+function setAttempts(d){ localStorage.setItem(ATTEMPT_KEY,JSON.stringify(d)); }
+function isSessionValid(){
+  try{ const s=JSON.parse(localStorage.getItem(SESSION_KEY)); return s&&s.exp>Date.now(); }
+  catch{ return false; }
 }
-function createSession() {
-  localStorage.setItem(SESSION_KEY, JSON.stringify({exp: Date.now() + 4*60*60*1000}));
-}
-function logout() {
-  if (!confirm('Çıkış yapmak istediğinden emin misin?')) return;
+function createSession(){ localStorage.setItem(SESSION_KEY,JSON.stringify({exp:Date.now()+4*3600*1000})); }
+function logout(){
+  if(!confirm('Çıkış yapmak istiyor musun?')) return;
   localStorage.removeItem(SESSION_KEY);
   location.reload();
 }
 
-let lockTimerInterval = null;
-function renderLoginState() {
-  const d = getAttemptData();
-  document.getElementById('attemptDots').innerHTML =
-    Array.from({length: MAX_ATTEMPTS}, (_,i) =>
-      `<div class="attempt-dot ${i < d.count ? 'used' : ''}"></div>`).join('');
-  const remaining = d.lockedUntil - Date.now();
-  if (remaining > 0) { showLockout(remaining); }
-  else {
-    document.getElementById('lockoutBox').style.display = 'none';
-    document.getElementById('loginBtn').disabled = false;
-    document.getElementById('pwdInput').disabled = false;
-    if (d.count > 0)
-      document.getElementById('loginWarn').textContent = `${MAX_ATTEMPTS - d.count} deneme hakkın kaldı`;
+let _lockInterval=null;
+function drawLoginState(){
+  const d=getAttempts();
+  document.getElementById('attemptDots').innerHTML=
+    Array.from({length:MAX_ATTEMPTS},(_,i)=>`<div class="attempt-dot ${i<d.count?'used':''}"></div>`).join('');
+  const rem=d.lockedUntil-Date.now();
+  if(rem>0){ showLockout(rem); }
+  else{
+    document.getElementById('lockoutBox').style.display='none';
+    document.getElementById('loginBtn').disabled=false;
+    document.getElementById('pwdInput').disabled=false;
+    if(d.count>0) document.getElementById('loginWarn').textContent=`${MAX_ATTEMPTS-d.count} deneme hakkın kaldı`;
   }
 }
-function showLockout(ms) {
-  document.getElementById('lockoutBox').style.display = 'block';
-  document.getElementById('loginBtn').disabled = true;
-  document.getElementById('pwdInput').disabled = true;
-  document.getElementById('loginErr').textContent = '';
-  document.getElementById('loginWarn').textContent = '';
-  clearInterval(lockTimerInterval);
-  const tick = () => {
-    const left = getAttemptData().lockedUntil - Date.now();
-    if (left <= 0) {
-      clearInterval(lockTimerInterval);
-      setAttemptData({count:0, lockedUntil:0});
-      renderLoginState();
-      document.getElementById('lockoutBox').style.display = 'none';
-      return;
-    }
-    const m = String(Math.floor(left/60000)).padStart(2,'0');
-    const s = String(Math.floor((left%60000)/1000)).padStart(2,'0');
-    document.getElementById('lockTimer').textContent = `${m}:${s}`;
+function showLockout(ms){
+  document.getElementById('lockoutBox').style.display='block';
+  document.getElementById('loginBtn').disabled=true;
+  document.getElementById('pwdInput').disabled=true;
+  document.getElementById('loginErr').textContent='';
+  document.getElementById('loginWarn').textContent='';
+  clearInterval(_lockInterval);
+  const tick=()=>{
+    const left=getAttempts().lockedUntil-Date.now();
+    if(left<=0){ clearInterval(_lockInterval); setAttempts({count:0,lockedUntil:0}); drawLoginState(); return; }
+    const m=String(Math.floor(left/60000)).padStart(2,'0');
+    const s=String(Math.floor((left%60000)/1000)).padStart(2,'0');
+    document.getElementById('lockTimer').textContent=`${m}:${s}`;
   };
-  lockTimerInterval = setInterval(tick, 1000);
-  tick();
+  _lockInterval=setInterval(tick,1000); tick();
 }
-async function tryLogin() {
-  const d = getAttemptData();
-  if (d.lockedUntil > Date.now()) return;
-  const pwd = document.getElementById('pwdInput').value;
-  if (!pwd) return;
-  const hash = await hashPwd(pwd);
-  if (hash === PASSWORD_HASH) {
-    setAttemptData({count:0, lockedUntil:0});
+async function tryLogin(){
+  document.getElementById('pwdInput').onkeydown=e=>{ if(e.key==='Enter') tryLogin(); };
+  const d=getAttempts();
+  if(d.lockedUntil>Date.now()) return;
+  const pwd=document.getElementById('pwdInput').value;
+  if(!pwd) return;
+  const hash=await hashPwd(pwd);
+  if(hash===PASSWORD_HASH){
+    setAttempts({count:0,lockedUntil:0});
     createSession();
     document.getElementById('loginScreen').classList.add('hidden');
-    document.getElementById('pwdInput').value = '';
+    document.getElementById('pwdInput').value='';
   } else {
-    const nc = d.count + 1;
-    if (nc >= MAX_ATTEMPTS) {
-      setAttemptData({count:nc, lockedUntil: Date.now()+LOCKOUT_MS});
-      document.getElementById('loginErr').textContent = 'Hesap kilitlendi!';
-      showLockout(LOCKOUT_MS);
-    } else {
-      setAttemptData({count:nc, lockedUntil:0});
-      document.getElementById('loginErr').textContent = 'Yanlış şifre!';
-      document.getElementById('pwdInput').value = '';
-    }
-    renderLoginState();
+    const nc=d.count+1;
+    if(nc>=MAX_ATTEMPTS){ setAttempts({count:nc,lockedUntil:Date.now()+LOCKOUT_MS}); document.getElementById('loginErr').textContent='Hesap kilitlendi!'; showLockout(LOCKOUT_MS); }
+    else { setAttempts({count:nc,lockedUntil:0}); document.getElementById('loginErr').textContent='Yanlış şifre!'; document.getElementById('pwdInput').value=''; }
+    drawLoginState();
   }
 }
-function initAuth() {
-  if (isSessionValid()) { document.getElementById('loginScreen').classList.add('hidden'); return; }
-  renderLoginState();
-  document.getElementById('pwdInput').focus();
+function initAuth(){
+  if(isSessionValid()){ document.getElementById('loginScreen').classList.add('hidden'); return; }
+  drawLoginState();
+  setTimeout(()=>document.getElementById('pwdInput').focus(),100);
 }
+document.getElementById('pwdInput').addEventListener('keydown',e=>{ if(e.key==='Enter') tryLogin(); });
 
-// ════════════════════════════════════════════════════════
-//  STATE
-// ════════════════════════════════════════════════════════
-const LS_KEY = 'tasmekan_menu_data';
-let data;
-var currentPage = 1;
-const PER_PAGE = 20;
+// ═══ STATE ═══════════════════════════════════════════════
+const LS_KEY='tm_menu_data';
+var gPage=1; // pagination - var so inline handlers work
+const PER_PAGE=20;
+var gData;
 
-function loadData() {
-  const saved = localStorage.getItem(LS_KEY);
-  if (saved) { try { data = JSON.parse(saved); return; } catch(e){} }
-  data = JSON.parse(JSON.stringify(MENU_DATA));
+function loadData(){
+  try{ const s=localStorage.getItem(LS_KEY); if(s){ gData=JSON.parse(s); return; } } catch(e){}
+  gData=JSON.parse(JSON.stringify(MENU_DATA));
 }
-function saveData() { localStorage.setItem(LS_KEY, JSON.stringify(data)); }
-function resetToOriginal() {
-  if (!confirm('Tüm değişiklikler silinip orijinal veriye dönülecek. Emin misin?')) return;
+function saveData(){ localStorage.setItem(LS_KEY,JSON.stringify(gData)); }
+function resetToOriginal(){
+  if(!confirm('Tüm değişiklikler silinip orijinal veriye dönülecek. Emin misin?')) return;
   localStorage.removeItem(LS_KEY);
-  data = JSON.parse(JSON.stringify(MENU_DATA));
-  render(); renderCategories();
-  toast('Orijinal veriye dönüldü.', 'warn');
+  gData=JSON.parse(JSON.stringify(MENU_DATA));
+  gPage=1; render(); renderCategories();
+  showToast('Orijinal veriye dönüldü.','warn');
 }
 
-// ════════════════════════════════════════════════════════
-//  TABS
-// ════════════════════════════════════════════════════════
-function switchTab(tab) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('panel-' + tab).classList.add('active');
-  event.currentTarget.classList.add('active');
-  if (tab === 'categories') renderCategories();
+// ═══ TABS ════════════════════════════════════════════════
+function switchTab(btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+  btn.classList.add('active');
+  if(btn.dataset.tab==='categories') renderCategories();
 }
 
-// ════════════════════════════════════════════════════════
-//  HELPERS
-// ════════════════════════════════════════════════════════
-function currentList() {
-  const lang = document.getElementById('filterLang').value;
-  const page = document.getElementById('filterPage').value;
-  return data[lang]?.[page] || [];
+// ═══ HELPERS ═════════════════════════════════════════════
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function currentList(){
+  const lang=document.getElementById('filterLang').value;
+  const page=document.getElementById('filterPage').value;
+  return gData[lang]?.[page]||[];
 }
-function allProductsById(id) {
-  const res = [];
-  for (const lang of Object.keys(data))
-    for (const page of Object.keys(data[lang]))
-      for (const p of data[lang][page])
-        if (p.id === id) res.push(p);
+
+function allById(id){
+  const res=[];
+  for(const lang of Object.keys(gData))
+    if(typeof gData[lang]==='object'&&!Array.isArray(gData[lang]))
+      for(const pg of Object.keys(gData[lang]))
+        if(Array.isArray(gData[lang][pg]))
+          for(const p of gData[lang][pg])
+            if(p.id===id) res.push(p);
   return res;
 }
-function nextId() {
-  let max = 0;
-  for (const lang of Object.keys(data))
-    for (const page of Object.keys(data[lang]))
-      for (const p of data[lang][page])
-        if (p.id > max) max = p.id;
-  return max + 1;
-}
-function escHtml(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
 
-// Get unique categories for a given page (from TR data)
-function getCategoriesForPage(page) {
-  const list = data.tr?.[page] || [];
-  return [...new Set(list.map(p => p.cat).filter(Boolean))].sort();
+function nextId(){
+  let max=0;
+  for(const lang of Object.keys(gData))
+    if(typeof gData[lang]==='object'&&!Array.isArray(gData[lang]))
+      for(const pg of Object.keys(gData[lang]))
+        if(Array.isArray(gData[lang][pg]))
+          for(const p of gData[lang][pg])
+            if(p.id>max) max=p.id;
+  return max+1;
 }
 
-// Populate a <select> with categories
-function populateCatDropdown(selectId, page) {
-  const sel = document.getElementById(selectId);
-  if (!sel) return;
-  const cats = getCategoriesForPage(page);
-  const prev = sel.value;
-  sel.innerHTML = cats.map(c => `<option value="${escHtml(c)}">${escHtml(c)}</option>`).join('');
-  if (prev && cats.includes(prev)) sel.value = prev;
+function getCatsForPage(page){
+  const fromProds=[...new Set((gData.tr?.[page]||[]).map(p=>p.cat).filter(Boolean))];
+  const fromStore=gData._categories?.[page]||[];
+  return [...new Set([...fromProds,...fromStore])].sort();
 }
 
-// ════════════════════════════════════════════════════════
-//  RENDER – PRODUCTS TABLE
-// ════════════════════════════════════════════════════════
-function render() {
-  const q      = document.getElementById('searchBox').value.toLowerCase().trim();
-  const status = document.getElementById('filterStatus').value;
-  const catF   = document.getElementById('filterCat').value;
-  const lang   = document.getElementById('filterLang').value;
-  const page   = document.getElementById('filterPage').value;
-  const list   = currentList();
+function populateCatDropdown(selId, page){
+  const sel=document.getElementById(selId);
+  if(!sel) return;
+  const prev=sel.value;
+  const cats=getCatsForPage(page);
+  sel.innerHTML=cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  if(prev&&cats.includes(prev)) sel.value=prev;
+}
 
-  // Update category filter dropdown
-  const cats = getCategoriesForPage(page);
-  const catSel = document.getElementById('filterCat');
-  const prevCat = catSel.value;
-  catSel.innerHTML = `<option value="">Tümü</option>` +
-    cats.map(c => `<option value="${escHtml(c)}"${c===prevCat?' selected':''}>${escHtml(c)}</option>`).join('');
+// ═══ RENDER ══════════════════════════════════════════════
+function resetPage(){ gPage=1; render(); }
 
-  const filtered = list.filter(p => {
-    if (status === 'active'   && !p.active) return false;
-    if (status === 'inactive' &&  p.active) return false;
-    if (catF && p.cat !== catF) return false;
-    if (q && !`${p.name} ${p.cat} ${p.price} ${p.desc}`.toLowerCase().includes(q)) return false;
+function render(){
+  const q=document.getElementById('searchBox').value.toLowerCase().trim();
+  const status=document.getElementById('filterStatus').value;
+  const catF=document.getElementById('filterCat').value;
+  const lang=document.getElementById('filterLang').value;
+  const page=document.getElementById('filterPage').value;
+  const list=currentList();
+
+  // rebuild cat filter
+  const cats=getCatsForPage(page);
+  const catSel=document.getElementById('filterCat');
+  const prevCat=catSel.value;
+  catSel.innerHTML=`<option value="">Tümü</option>`+cats.map(c=>`<option value="${esc(c)}"${c===prevCat?' selected':''}>${esc(c)}</option>`).join('');
+
+  const filtered=list.filter(p=>{
+    if(status==='active'&&!p.active) return false;
+    if(status==='inactive'&&p.active) return false;
+    if(catF&&p.cat!==catF) return false;
+    if(q&&!`${p.name} ${p.cat} ${p.price} ${p.desc}`.toLowerCase().includes(q)) return false;
     return true;
   });
 
-  document.getElementById('countBadge').textContent = `${filtered.length} ürün`;
+  document.getElementById('countBadge').textContent=`${filtered.length} ürün`;
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
-  if (currentPage > totalPages) currentPage = totalPages;
-  const slice = filtered.slice((currentPage-1)*PER_PAGE, currentPage*PER_PAGE);
+  const total=Math.max(1,Math.ceil(filtered.length/PER_PAGE));
+  if(gPage>total) gPage=total;
+  const slice=filtered.slice((gPage-1)*PER_PAGE, gPage*PER_PAGE);
 
-  document.getElementById('tableBody').innerHTML = slice.map(p => `
-    <tr class="${p.active ? '' : 'inactive'}">
-      <td>${p.img
-        ? `<img class="img-thumb" src="assets/images/${escHtml(p.img)}" onerror="this.style.display='none'" title="${escHtml(p.img)}">`
-        : `<div class="img-placeholder">—</div>`}</td>
-      <td><strong>${escHtml(p.name)}</strong></td>
-      <td><span class="tag-cat">${escHtml(p.cat)}</span></td>
-      <td style="max-width:240px;color:var(--muted);font-size:.8rem;">${escHtml(p.desc||'—')}</td>
-      <td class="price-cell">${p.price ? p.price+' TL' : '—'}</td>
-      <td><span class="status-badge ${p.active ? 'status-active' : 'status-inactive'}">${p.active ? 'Aktif' : 'İnaktif'}</span></td>
+  document.getElementById('tableBody').innerHTML=slice.map(p=>`
+    <tr class="${p.active?'':'inactive'}">
+      <td>${p.img?`<img class="img-thumb" src="assets/images/${esc(p.img)}" onerror="this.style.display='none'">`:`<div class="img-placeholder">—</div>`}</td>
+      <td class="name-cell">${esc(p.name)}</td>
+      <td><span class="tag-cat">${esc(p.cat)}</span></td>
+      <td class="desc-cell" title="${esc(p.desc)}">${esc(p.desc||'—')}</td>
+      <td class="price-cell">${p.price?p.price+' ₺':'—'}</td>
+      <td><span class="status-badge ${p.active?'status-active':'status-inactive'}">${p.active?'Aktif':'İnaktif'}</span></td>
       <td><div class="actions-cell">
-        <button class="btn btn-gold btn-sm"  onclick="openEdit(${p.id},'${lang}')">Düzenle</button>
-        <button class="btn ${p.active?'btn-gray':'btn-green'} btn-sm" onclick="toggleActive(${p.id})">${p.active?'Gizle':'Göster'}</button>
-        <button class="btn btn-red btn-sm"   onclick="deleteProduct(${p.id})">Sil</button>
+        <button class="btn btn-ghost btn-sm" onclick="openEdit(${p.id},'${lang}')">Düzenle</button>
+        <button class="btn ${p.active?'btn-ghost':'btn-green'} btn-sm" onclick="toggleActive(${p.id})">${p.active?'Gizle':'Göster'}</button>
+        <button class="btn btn-red btn-sm" onclick="deleteProduct(${p.id})">Sil</button>
       </div></td>
     </tr>`).join('');
 
-  renderPagination(totalPages);
+  renderPagination(total, filtered.length);
 }
 
-function renderPagination(totalPages) {
-  const el = document.getElementById('pagination');
-  if (totalPages <= 1) { el.innerHTML = ''; return; }
-  let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
-  for (let i = 1; i <= totalPages; i++) {
-    if (totalPages > 7 && Math.abs(i - currentPage) > 2 && i !== 1 && i !== totalPages) {
-      if (i === 2 || i === totalPages-1) html += `<span class="page-info">…</span>`;
+function renderPagination(total, totalItems){
+  const el=document.getElementById('paginationWrap');
+  if(total<=1){ el.innerHTML=''; return; }
+  const from=(gPage-1)*PER_PAGE+1;
+  const to=Math.min(gPage*PER_PAGE, totalItems);
+  let html=`<button class="pg-btn" onclick="goPage(${gPage-1})" ${gPage===1?'disabled':''}>‹ Önceki</button>`;
+  for(let i=1;i<=total;i++){
+    if(total>7&&Math.abs(i-gPage)>2&&i!==1&&i!==total){
+      if(i===2||i===total-1) html+=`<span class="pg-sep">…</span>`;
       continue;
     }
-    html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+    html+=`<button class="pg-btn ${i===gPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
   }
-  html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>`;
-  html += `<span class="page-info">${currentPage} / ${totalPages}</span>`;
-  el.innerHTML = html;
+  html+=`<button class="pg-btn" onclick="goPage(${gPage+1})" ${gPage===total?'disabled':''}>Sonraki ›</button>`;
+  html+=`<span class="pg-info">${from}–${to} / ${totalItems} ürün</span>`;
+  el.innerHTML=html;
 }
 
-function goPage(p) { currentPage = p; render(); window.scrollTo(0,0); }
+function goPage(p){ gPage=p; render(); window.scrollTo({top:0,behavior:'smooth'}); }
 
-// ════════════════════════════════════════════════════════
-//  TOGGLE / DELETE
-// ════════════════════════════════════════════════════════
-function toggleActive(id) {
-  const all = allProductsById(id);
-  const ns = !all[0].active;
-  all.forEach(p => p.active = ns);
+// ═══ TOGGLE / DELETE ═════════════════════════════════════
+function toggleActive(id){
+  const all=allById(id);
+  const ns=!all[0].active;
+  all.forEach(p=>p.active=ns);
   saveData(); render();
-  toast(ns ? '✓ Ürün aktif edildi.' : 'Ürün gizlendi.', ns ? '' : 'warn');
+  showToast(ns?'✓ Ürün aktif edildi.':'Ürün gizlendi.',ns?'success':'warn');
 }
-function deleteProduct(id) {
-  if (!confirm('Bu ürün TR ve EN\'den kalıcı olarak silinecek. Emin misin?')) return;
-  for (const lang of Object.keys(data))
-    for (const page of Object.keys(data[lang]))
-      data[lang][page] = data[lang][page].filter(p => p.id !== id);
+function deleteProduct(id){
+  if(!confirm('Bu ürün TR ve EN\'den kalıcı olarak silinecek. Emin misin?')) return;
+  for(const lang of Object.keys(gData))
+    if(typeof gData[lang]==='object'&&!Array.isArray(gData[lang]))
+      for(const pg of Object.keys(gData[lang]))
+        if(Array.isArray(gData[lang][pg]))
+          gData[lang][pg]=gData[lang][pg].filter(p=>p.id!==id);
   saveData(); render();
-  toast('Ürün silindi.', 'error');
+  showToast('Ürün silindi.','error');
 }
 
-// ════════════════════════════════════════════════════════
-//  EDIT MODAL
-// ════════════════════════════════════════════════════════
-let editingLang = 'tr';
-let editingPage = 'yiyecekler';
-
-function openEdit(id, lang) {
-  editingLang = lang;
-  const allPages = Object.keys(data[lang] || {});
-  let p = null;
-  for (const pg of allPages) {
-    p = data[lang][pg].find(x => x.id === id);
-    if (p) { editingPage = pg; break; }
-  }
-  if (!p) return;
-  document.getElementById('editId').value    = id;
-  document.getElementById('editName').value  = p.name;
-  document.getElementById('editPrice').value = p.price;
-  document.getElementById('editDesc').value  = p.desc || '';
-  document.getElementById('editImg').value   = p.img  || '';
-  populateCatDropdown('editCat', editingPage);
-  document.getElementById('editCat').value   = p.cat;
+// ═══ EDIT MODAL ══════════════════════════════════════════
+var _editLang='tr', _editPage='yiyecekler';
+function openEdit(id,lang){
+  _editLang=lang;
+  const pages=Object.keys(gData[lang]||{});
+  let p=null;
+  for(const pg of pages){ p=(gData[lang][pg]||[]).find(x=>x.id===id); if(p){_editPage=pg;break;} }
+  if(!p) return;
+  document.getElementById('editId').value    =id;
+  document.getElementById('editName').value  =p.name;
+  document.getElementById('editPrice').value =p.price;
+  document.getElementById('editDesc').value  =p.desc||'';
+  document.getElementById('editImg').value   =p.img||'';
+  populateCatDropdown('editCat',_editPage);
+  document.getElementById('editCat').value=p.cat;
   updateImgPreview();
   document.getElementById('editModal').classList.add('open');
 }
-function closeModal() { document.getElementById('editModal').classList.remove('open'); }
-function updateImgPreview() {
-  const val = document.getElementById('editImg').value.trim();
-  const pre = document.getElementById('editImgPreview');
-  if (val) { pre.src = `assets/images/${val}`; pre.style.display = 'block'; }
-  else { pre.style.display = 'none'; }
+function closeEditModal(){ document.getElementById('editModal').classList.remove('open'); }
+function updateImgPreview(){
+  const v=document.getElementById('editImg').value.trim();
+  const pr=document.getElementById('editImgPreview');
+  if(v){pr.src=`assets/images/${v}`;pr.style.display='block';}
+  else pr.style.display='none';
 }
-function saveEdit() {
-  const id       = parseInt(document.getElementById('editId').value);
-  const newName  = document.getElementById('editName').value.trim();
-  const newCat   = document.getElementById('editCat').value.trim();
-  const newPrice = parseInt(document.getElementById('editPrice').value) || 0;
-  const newDesc  = document.getElementById('editDesc').value.trim();
-  const newImg   = document.getElementById('editImg').value.trim();
-  const p = (data[editingLang]?.[editingPage] || []).find(x => x.id === id);
-  if (p) { p.name = newName; p.cat = newCat; p.price = newPrice; p.desc = newDesc; p.img = newImg; }
-  allProductsById(id).forEach(x => { if (x !== p) { x.price = newPrice; x.cat = newCat; x.img = newImg; } });
-  saveData(); closeModal(); render();
-  toast('✓ Değişiklikler kaydedildi.');
+function saveEdit(){
+  const id=parseInt(document.getElementById('editId').value);
+  const name=document.getElementById('editName').value.trim();
+  const cat =document.getElementById('editCat').value.trim();
+  const price=parseInt(document.getElementById('editPrice').value)||0;
+  const desc=document.getElementById('editDesc').value.trim();
+  const img =document.getElementById('editImg').value.trim();
+  const p=(gData[_editLang]?.[_editPage]||[]).find(x=>x.id===id);
+  if(p){p.name=name;p.cat=cat;p.price=price;p.desc=desc;p.img=img;}
+  allById(id).forEach(x=>{if(x!==p){x.price=price;x.cat=cat;x.img=img;}});
+  saveData(); closeEditModal(); render();
+  showToast('✓ Kaydedildi.','success');
 }
 
-// ════════════════════════════════════════════════════════
-//  ADD PRODUCT
-// ════════════════════════════════════════════════════════
-function toggleAddBar() {
-  const bar = document.getElementById('addBar');
-  bar.classList.toggle('open');
-  if (bar.classList.contains('open'))
-    populateCatDropdown('addCat', document.getElementById('addPage').value);
+// ═══ ADD PRODUCT ═════════════════════════════════════════
+function openAddBar(){
+  document.getElementById('addBar').classList.add('open');
+  populateCatDropdown('addCatSel',document.getElementById('addPage').value);
 }
-function addProduct() {
-  const page   = document.getElementById('addPage').value;
-  const cat    = document.getElementById('addCat').value.trim();
-  const nameTr = document.getElementById('addNameTr').value.trim();
-  const nameEn = document.getElementById('addNameEn').value.trim();
-  const descTr = document.getElementById('addDescTr').value.trim();
-  const descEn = document.getElementById('addDescEn').value.trim();
-  const price  = parseInt(document.getElementById('addPrice').value) || 0;
-  const img    = document.getElementById('addImg').value.trim();
-  const lang   = document.getElementById('addLang').value;
-  if (!cat || !nameTr) { toast('Kategori ve Türkçe ad zorunludur.', 'error'); return; }
-  const id = nextId();
-  const base = {id, active:true, cat, img, price};
-  if (lang === 'tr' || lang === 'both') { if (!data.tr[page]) data.tr[page]=[]; data.tr[page].push({...base, name:nameTr, desc:descTr}); }
-  if (lang === 'en' || lang === 'both') { if (!data.en[page]) data.en[page]=[]; data.en[page].push({...base, name:nameEn||nameTr, desc:descEn||descTr}); }
+function closeAddBar(){ document.getElementById('addBar').classList.remove('open'); }
+
+function addProduct(){
+  const page  =document.getElementById('addPage').value;
+  const cat   =document.getElementById('addCatSel').value.trim();
+  const nameTr=document.getElementById('addNameTr').value.trim();
+  const nameEn=document.getElementById('addNameEn').value.trim();
+  const descTr=document.getElementById('addDescTr').value.trim();
+  const descEn=document.getElementById('addDescEn').value.trim();
+  const price =parseInt(document.getElementById('addPrice').value)||0;
+  const img   =document.getElementById('addImg').value.trim();
+  const lang  =document.getElementById('addLang').value;
+  if(!cat||!nameTr){ showToast('Kategori ve Türkçe ad zorunludur.','error'); return; }
+  const id=nextId();
+  const base={id,active:true,cat,img,price};
+  if(lang==='tr'||lang==='both'){ if(!gData.tr[page]) gData.tr[page]=[]; gData.tr[page].push({...base,name:nameTr,desc:descTr}); }
+  if(lang==='en'||lang==='both'){ if(!gData.en[page]) gData.en[page]=[]; gData.en[page].push({...base,name:nameEn||nameTr,desc:descEn||descTr}); }
   saveData();
-  document.getElementById('filterPage').value = page;
-  currentPage = 1;
-  toggleAddBar();
+  document.getElementById('filterPage').value=page;
+  gPage=1;
+  closeAddBar();
+  ['addNameTr','addNameEn','addDescTr','addDescEn','addPrice','addImg'].forEach(id=>document.getElementById(id).value='');
   render();
-  toast('✓ Ürün eklendi!');
+  showToast('✓ Ürün eklendi!','success');
 }
 
-// ════════════════════════════════════════════════════════
-//  CATEGORIES PANEL
-// ════════════════════════════════════════════════════════
-function renderCategories() {
-  const page = document.getElementById('catFilterPage').value;
-  const cats = getCategoriesForPage(page);
-  const grid = document.getElementById('catGrid');
-  if (!cats.length) { grid.innerHTML = `<p style="color:var(--muted);padding:8px 0">Bu sayfada henüz kategori yok.</p>`; return; }
-  grid.innerHTML = cats.map(cat => {
-    const count = (data.tr?.[page] || []).filter(p => p.cat === cat).length;
+// ═══ CATEGORIES ══════════════════════════════════════════
+function renderCategories(){
+  const page=document.getElementById('catFilterPage').value;
+  const cats=getCatsForPage(page);
+  document.getElementById('catSectionTitle').textContent=`Mevcut Kategoriler (${cats.length})`;
+  const grid=document.getElementById('catGrid');
+  if(!cats.length){ grid.innerHTML=`<p style="color:var(--muted);padding:8px 0;grid-column:1/-1">Bu sayfada henüz kategori yok.</p>`; return; }
+  grid.innerHTML=cats.map(cat=>{
+    const count=(gData.tr?.[page]||[]).filter(p=>p.cat===cat).length;
     return `<div class="cat-card">
       <div>
-        <div class="cat-card-name">${escHtml(cat)}</div>
-        <div class="cat-card-count">${count} ürün</div>
+        <div class="cat-name">${esc(cat)}</div>
+        <div class="cat-count">${count} ürün</div>
       </div>
-      <div class="cat-card-actions">
-        <button class="btn btn-gold btn-sm" onclick="openCatEdit('${escHtml(cat)}','${page}')">Düzenle</button>
-        <button class="btn btn-red btn-sm"  onclick="deleteCategory('${escHtml(cat)}','${page}')">Sil</button>
+      <div class="cat-actions">
+        <button class="btn btn-ghost btn-sm" onclick="openCatEdit('${esc(cat)}','${page}')">Düzenle</button>
+        <button class="btn btn-red btn-sm"   onclick="deleteCategory('${esc(cat)}','${page}')">Sil</button>
       </div>
     </div>`;
   }).join('');
 }
-
-function addCategory() {
-  const name = document.getElementById('newCatName').value.trim().toLowerCase();
-  const page = document.getElementById('catFilterPage').value;
-  if (!name) { toast('Kategori adı boş olamaz.', 'error'); return; }
-  const existing = getCategoriesForPage(page);
-  if (existing.includes(name)) { toast('Bu kategori zaten mevcut.', 'warn'); return; }
-  // Add a placeholder product to reserve the category (or just store category list)
-  // We use a CATEGORIES_DATA store in data
-  if (!data._categories) data._categories = {};
-  if (!data._categories[page]) data._categories[page] = [];
-  if (!data._categories[page].includes(name)) data._categories[page].push(name);
+function addCategory(){
+  const name=document.getElementById('newCatName').value.trim().toLowerCase();
+  const page=document.getElementById('catFilterPage').value;
+  if(!name){ showToast('Kategori adı boş olamaz.','error'); return; }
+  if(getCatsForPage(page).includes(name)){ showToast('Bu kategori zaten mevcut.','warn'); return; }
+  if(!gData._categories) gData._categories={};
+  if(!gData._categories[page]) gData._categories[page]=[];
+  gData._categories[page].push(name);
   saveData();
-  document.getElementById('newCatName').value = '';
+  document.getElementById('newCatName').value='';
   renderCategories();
-  toast('✓ Kategori eklendi.');
+  showToast('✓ Kategori eklendi.','success');
 }
-
-// Override getCategoriesForPage to also include _categories
-const _origGetCats = getCategoriesForPage;
-// Redefine to merge stored categories
-function getCategoriesForPage(page) {
-  const fromProducts = [...new Set((data.tr?.[page]||[]).map(p=>p.cat).filter(Boolean))];
-  const fromStore = data._categories?.[page] || [];
-  return [...new Set([...fromProducts, ...fromStore])].sort();
-}
-
-function openCatEdit(oldName, page) {
-  document.getElementById('editCatOld').value  = oldName;
-  document.getElementById('editCatPage').value = page;
-  document.getElementById('editCatNew').value  = oldName;
+function openCatEdit(old,page){
+  document.getElementById('editCatOld').value=old;
+  document.getElementById('editCatPage').value=page;
+  document.getElementById('editCatNew').value=old;
   document.getElementById('editCatModal').classList.add('open');
 }
-function closeCatModal() { document.getElementById('editCatModal').classList.remove('open'); }
-function saveCatEdit() {
-  const oldName = document.getElementById('editCatOld').value;
-  const newName = document.getElementById('editCatNew').value.trim().toLowerCase();
-  const page    = document.getElementById('editCatPage').value;
-  if (!newName) { toast('Kategori adı boş olamaz.', 'error'); return; }
-  // Update all products in both langs
-  for (const lang of Object.keys(data))
-    if (lang !== '_categories' && data[lang]?.[page])
-      data[lang][page].forEach(p => { if (p.cat === oldName) p.cat = newName; });
-  // Update stored categories
-  if (data._categories?.[page]) {
-    const idx = data._categories[page].indexOf(oldName);
-    if (idx !== -1) data._categories[page][idx] = newName;
+function closeCatModal(){ document.getElementById('editCatModal').classList.remove('open'); }
+function saveCatEdit(){
+  const old=document.getElementById('editCatOld').value;
+  const nw =document.getElementById('editCatNew').value.trim().toLowerCase();
+  const page=document.getElementById('editCatPage').value;
+  if(!nw){ showToast('Kategori adı boş olamaz.','error'); return; }
+  for(const lang of Object.keys(gData))
+    if(typeof gData[lang]==='object'&&!Array.isArray(gData[lang])&&gData[lang][page])
+      gData[lang][page].forEach(p=>{ if(p.cat===old) p.cat=nw; });
+  if(gData._categories?.[page]){
+    const i=gData._categories[page].indexOf(old);
+    if(i!==-1) gData._categories[page][i]=nw;
   }
   saveData(); closeCatModal(); renderCategories(); render();
-  toast('✓ Kategori güncellendi.');
+  showToast('✓ Kategori güncellendi.','success');
 }
-function deleteCategory(cat, page) {
-  const count = (data.tr?.[page]||[]).filter(p=>p.cat===cat).length;
-  if (count > 0) {
-    if (!confirm(`"${cat}" kategorisinde ${count} ürün var. Yine de silmek istiyor musun? Ürünler silinmez, kategorisiz kalır.`)) return;
-  } else {
-    if (!confirm(`"${cat}" kategorisini silmek istiyor musun?`)) return;
-  }
-  if (data._categories?.[page]) {
-    data._categories[page] = data._categories[page].filter(c=>c!==cat);
-  }
+function deleteCategory(cat,page){
+  const count=(gData.tr?.[page]||[]).filter(p=>p.cat===cat).length;
+  const msg=count>0?`"${cat}" kategorisinde ${count} ürün var. Sil?`:`"${cat}" kategorisini silmek istiyor musun?`;
+  if(!confirm(msg)) return;
+  if(gData._categories?.[page]) gData._categories[page]=gData._categories[page].filter(c=>c!==cat);
   saveData(); renderCategories();
-  toast('Kategori silindi.', 'warn');
+  showToast('Kategori silindi.','warn');
 }
 
-// ════════════════════════════════════════════════════════
-//  EXPORT
-// ════════════════════════════════════════════════════════
-function openExport() {
-  document.getElementById('exportBox').textContent = `const MENU_DATA = ${JSON.stringify(data, null, 2)};\n`;
+// ═══ EXPORT ══════════════════════════════════════════════
+function openExport(){
+  document.getElementById('exportBox').textContent=`const MENU_DATA = ${JSON.stringify(gData,null,2)};\n`;
   document.getElementById('exportModal').classList.add('open');
 }
-function closeExport() { document.getElementById('exportModal').classList.remove('open'); }
-function copyExport() {
+function closeExport(){ document.getElementById('exportModal').classList.remove('open'); }
+function copyExport(){
   navigator.clipboard.writeText(document.getElementById('exportBox').textContent)
-    .then(()=>toast('✓ Kopyalandı!')).catch(()=>toast('Kopyalama başarısız.','error'));
+    .then(()=>showToast('✓ Kopyalandı!','success'))
+    .catch(()=>showToast('Kopyalama başarısız.','error'));
 }
-function downloadExport() {
-  const a = document.createElement('a');
-  a.href = 'data:text/javascript;charset=utf-8,' + encodeURIComponent(document.getElementById('exportBox').textContent);
-  a.download = 'menu-data.js';
-  a.click();
-  toast('İndiriliyor…');
+function downloadExport(){
+  const a=document.createElement('a');
+  a.href='data:text/javascript;charset=utf-8,'+encodeURIComponent(document.getElementById('exportBox').textContent);
+  a.download='menu-data.js'; a.click();
+  showToast('İndiriliyor…');
 }
 
-// ════════════════════════════════════════════════════════
-//  TOAST
-// ════════════════════════════════════════════════════════
-function toast(msg, type) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'toast show' + (type ? ' '+type : '');
+// ═══ TOAST ═══════════════════════════════════════════════
+function showToast(msg,type){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.className='toast show'+(type?' '+type:'');
   clearTimeout(el._t);
-  el._t = setTimeout(() => el.className = 'toast', 3000);
+  el._t=setTimeout(()=>el.className='toast',3000);
 }
 
-// ════════════════════════════════════════════════════════
-//  INIT
-// ════════════════════════════════════════════════════════
+// ═══ INIT ════════════════════════════════════════════════
 initAuth();
 loadData();
-populateCatDropdown('addCat', document.getElementById('addPage').value);
+populateCatDropdown('addCatSel', document.getElementById('addPage').value);
 render();
 </script>
 </body>
