@@ -138,6 +138,8 @@ tbody tr:last-child td{border-bottom:none}
 .status-inactive{background:#f8fafc;color:var(--muted2);border:1px solid var(--border)}
 .status-inactive::before{content:'○';font-size:.6rem}
 .price-cell{font-weight:700;color:var(--dark);white-space:nowrap}
+.price-cell:hover{background:var(--gold-lt);border-radius:6px;outline:2px dashed var(--gold-md)}
+.price-input{width:90px;padding:4px 8px;border:2px solid var(--gold);border-radius:7px;font-size:.9rem;font-weight:700;color:var(--dark);background:#fff;text-align:center;outline:none}
 .actions-cell{display:flex;gap:5px;flex-wrap:nowrap}
 .name-cell{font-weight:600;max-width:180px}
 .desc-cell{color:var(--muted);font-size:.78rem;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -663,7 +665,7 @@ function render(){
       <td class="name-cell">${esc(p.name)}</td>
       <td><span class="tag-cat">${esc(p.cat)}</span></td>
       <td class="desc-cell" title="${esc(p.desc)}">${esc(p.desc||'—')}</td>
-      <td class="price-cell">${p.price?p.price+' ₺':'—'}</td>
+      <td class="price-cell" title="Düzenlemek için tıkla" onclick="inlineEditPrice(${p.id}, this)" style="cursor:pointer">${p.price?p.price+' ₺':'—'}</td>
       <td><span class="status-badge ${p.active?'status-active':'status-inactive'}">${p.active?'Aktif':'İnaktif'}</span></td>
       <td><div class="actions-cell">
         <button class="btn btn-ghost btn-sm" onclick="openEdit(${p.id},'${lang}')">Düzenle</button>
@@ -694,6 +696,36 @@ function renderPagination(total, totalItems){
 }
 
 function goPage(p){ gPage=p; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+// ═══ INLINE PRICE EDIT ═══════════════════════════════════
+function inlineEditPrice(id, td) {
+  if (td.querySelector('input')) return; // zaten açık
+  const all = allById(id);
+  const current = all[0] ? all[0].price : 0;
+
+  td.innerHTML = '<input class="price-input" type="number" value="' + current + '" min="0"/>';
+  const input = td.querySelector('input');
+  input.focus();
+  input.select();
+
+  function commit() {
+    const val = parseInt(input.value) || 0;
+    all.forEach(p => p.price = val);
+    saveData();
+    td.innerHTML = val ? val + ' ₺' : '—';
+    td.onclick = function(){ inlineEditPrice(id, td); };
+    showToast('✓ Fiyat güncellendi: ' + val + ' ₺', 'success');
+  }
+
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { commit(); }
+    if (e.key === 'Escape') {
+      td.innerHTML = current ? current + ' ₺' : '—';
+      td.onclick = function(){ inlineEditPrice(id, td); };
+    }
+  });
+  input.addEventListener('blur', commit);
+}
 
 // ═══ TOGGLE / DELETE ═════════════════════════════════════
 function toggleActive(id){
