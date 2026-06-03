@@ -41,7 +41,7 @@
             '<div class="' + detailClass + '">' +
               '<h5>' + (p.name || '') + '</h5>' +
               '<p>' + (p.desc || '') + '</p>' +
-              '<div class="options"><h6>' + (p.price ? p.price + ' TL' : '') + '</h6></div>' +
+              '<div class="options"><h6>' + (p.price ? String(p.price) + ' TL' : '') + '</h6></div>' +
             '</div>' +
           '</div></div>' +
         '</div>'

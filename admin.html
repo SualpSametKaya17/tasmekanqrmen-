@@ -271,7 +271,7 @@ tbody tr:last-child td{border-bottom:none}
         </div>
         <div class="form-group">
           <label>Fiyat (TL)</label>
-          <input type="number" id="addPrice" placeholder="350"/>
+          <input type="text" id="addPrice" placeholder="350 veya 400 / 250"/>
         </div>
         <div class="form-group">
           <label>Ürün Adı (TR)</label>
@@ -405,7 +405,7 @@ tbody tr:last-child td{border-bottom:none}
       </div>
       <div class="form-group">
         <label>Fiyat (TL)</label>
-        <input type="number" id="editPrice"/>
+        <input type="text" id="editPrice" placeholder="350 veya 400 / 250"/>
       </div>
       <div class="form-group full">
         <label>Açıklama</label>
@@ -703,18 +703,18 @@ function inlineEditPrice(id, td) {
   const all = allById(id);
   const current = all[0] ? all[0].price : 0;
 
-  td.innerHTML = '<input class="price-input" type="number" value="' + current + '" min="0"/>';
+  td.innerHTML = '<input class="price-input" type="text" value="' + current + '" placeholder="400 / 250"/>';
   const input = td.querySelector('input');
   input.focus();
   input.select();
 
   function commit() {
-    const val = parseInt(input.value) || 0;
+    const val = input.value.trim() || 0;
     all.forEach(p => p.price = val);
     saveData();
     td.innerHTML = val ? val + ' ₺' : '—';
     td.onclick = function(){ inlineEditPrice(id, td); };
-    showToast('✓ Fiyat güncellendi: ' + val + ' ₺', 'success');
+    showToast('✓ Fiyat: ' + (val || '—') + ' ₺', 'success');
   }
 
   input.addEventListener('keydown', function(e) {
@@ -775,7 +775,7 @@ function saveEdit(){
   const id=parseInt(document.getElementById('editId').value);
   const name=document.getElementById('editName').value.trim();
   const cat =document.getElementById('editCat').value.trim();
-  const price=parseInt(document.getElementById('editPrice').value)||0;
+  const price=document.getElementById('editPrice').value.trim()||0;
   const desc=document.getElementById('editDesc').value.trim();
   const img =document.getElementById('editImg').value.trim();
   const p=(gData[_editLang]?.[_editPage]||[]).find(x=>x.id===id);
@@ -799,7 +799,7 @@ function addProduct(){
   const nameEn=document.getElementById('addNameEn').value.trim();
   const descTr=document.getElementById('addDescTr').value.trim();
   const descEn=document.getElementById('addDescEn').value.trim();
-  const price =parseInt(document.getElementById('addPrice').value)||0;
+  const price =document.getElementById('addPrice').value.trim()||0;
   const img   =document.getElementById('addImg').value.trim();
   const lang  =document.getElementById('addLang').value;
   if(!cat||!nameTr){ showToast('Kategori ve Türkçe ad zorunludur.','error'); return; }
