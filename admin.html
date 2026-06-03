@@ -79,6 +79,9 @@ body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);colo
 .btn-topbar:hover{background:rgba(255,255,255,.15);color:#fff}
 .btn-topbar.gold{background:var(--gold);border-color:var(--gold);color:#fff}
 .btn-topbar.gold:hover{background:#d09700}
+.unsaved-badge{display:none;background:#f59e0b;color:#fff;border-radius:6px;padding:4px 10px;font-size:.75rem;font-weight:700;animation:pulse 1.8s infinite}
+.unsaved-badge.show{display:inline-block}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
 
 /* ── TAB NAV ── */
 .tab-nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;gap:0;box-shadow:var(--shadow)}
@@ -219,6 +222,7 @@ tbody tr:last-child td{border-bottom:none}
   </div>
   <div class="spacer"></div>
   <div class="topbar-actions">
+    <span class="unsaved-badge" id="unsavedBadge">● Kaydedilmemiş değişiklik</span>
     <button class="btn-topbar gold" onclick="openExport()">⬇ Dışa Aktar</button>
     <button class="btn-topbar" onclick="resetToOriginal()">↺ Sıfırla</button>
     <button class="btn-topbar" onclick="logout()">Çıkış ↩</button>
@@ -555,7 +559,10 @@ function loadData(){
   try{ const s=localStorage.getItem(LS_KEY); if(s){ gData=JSON.parse(s); return; } } catch(e){}
   gData=JSON.parse(JSON.stringify(MENU_DATA));
 }
-function saveData(){ localStorage.setItem(LS_KEY,JSON.stringify(gData)); }
+function saveData(){
+  localStorage.setItem(LS_KEY,JSON.stringify(gData));
+  document.getElementById('unsavedBadge').classList.add('show');
+}
 function resetToOriginal(){
   if(!confirm('Tüm değişiklikler silinip orijinal veriye dönülecek. Emin misin?')) return;
   localStorage.removeItem(LS_KEY);
@@ -857,7 +864,8 @@ function downloadExport(){
   const a=document.createElement('a');
   a.href='data:text/javascript;charset=utf-8,'+encodeURIComponent(document.getElementById('exportBox').textContent);
   a.download='menu-data.js'; a.click();
-  showToast('İndiriliyor…');
+  document.getElementById('unsavedBadge').classList.remove('show');
+  showToast('✓ İndirildi! Dosyayı assets/js/menu-data.js ile değiştirip push edin.','success');
 }
 
 // ═══ TOAST ═══════════════════════════════════════════════
