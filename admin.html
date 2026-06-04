@@ -212,6 +212,29 @@ tbody tr:last-child td{border-bottom:none}
 .mini-preview{width:86px;height:64px;object-fit:cover;border-radius:8px;border:1.5px solid var(--border);background:var(--surface2);flex-shrink:0;display:none}
 .mini-preview.show{display:block}
 .field-hint{font-size:.7rem;color:var(--muted2);font-weight:400;text-transform:none;letter-spacing:0}
+
+/* ── IMAGE UPLOAD WIDGET ── */
+.img-upload-wrap{display:flex;flex-direction:column;gap:8px}
+.img-upload-box{border:2px dashed var(--border2);border-radius:10px;padding:0;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;background:var(--surface2);min-height:100px;display:flex;align-items:center;justify-content:center}
+.img-upload-box:hover{border-color:var(--gold);background:var(--gold-lt)}
+.img-upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.img-upload-placeholder{display:flex;flex-direction:column;align-items:center;gap:6px;padding:18px;pointer-events:none}
+.img-upload-placeholder .upload-icon{font-size:1.8rem;opacity:.4}
+.img-upload-placeholder span{font-size:.75rem;color:var(--muted);font-weight:600;text-align:center}
+.img-upload-placeholder small{font-size:.68rem;color:var(--muted2)}
+.img-upload-box.has-img .img-upload-placeholder{display:none}
+.img-upload-preview{width:100%;height:130px;object-fit:cover;display:none;border-radius:8px}
+.img-upload-box.has-img .img-upload-preview{display:block}
+.img-upload-badge{position:absolute;top:7px;right:7px;background:rgba(0,0,0,.55);color:#fff;border-radius:6px;padding:3px 8px;font-size:.68rem;font-weight:700;pointer-events:none;backdrop-filter:blur(4px)}
+.img-upload-clear{position:absolute;top:7px;left:7px;background:rgba(239,68,68,.85);color:#fff;border:none;border-radius:6px;padding:3px 8px;font-size:.7rem;font-weight:700;cursor:pointer;display:none;z-index:5}
+.img-upload-box.has-img .img-upload-clear{display:block}
+.img-path-row{display:flex;gap:6px;align-items:center}
+.img-path-row input{flex:1}
+.path-hint{font-size:.7rem;color:var(--muted2);display:flex;align-items:center;gap:4px;padding:4px 0}
+.path-hint code{background:var(--gold-lt);color:var(--gold);padding:1px 5px;border-radius:4px;font-size:.68rem}
+.upload-info-box{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 12px;display:flex;gap:8px;align-items:flex-start}
+.upload-info-box i-icon{color:#3b82f6;font-size:.9rem;flex-shrink:0}
+.upload-info-box p{margin:0;font-size:.75rem;color:#1d4ed8;line-height:1.5}
 </style>
 </head>
 <body>
@@ -297,13 +320,30 @@ tbody tr:last-child td{border-bottom:none}
         </div>
       </div>
 
-      <!-- Image with live preview -->
-      <div class="add-img-row">
-        <div class="form-group">
-          <label>Görsel <small class="field-hint">(assets/images/ sonrası)</small></label>
-          <input type="text" id="addImg" placeholder="Menü/Kategori/urun.webp" oninput="updateAddPreview()"/>
+      <!-- Image upload widget -->
+      <div class="form-group" style="margin-top:14px">
+        <label>Görsel</label>
+        <div class="img-upload-wrap">
+          <div class="img-upload-box" id="addUploadBox">
+            <input type="file" accept="image/*" onchange="onAddImageSelect(this)"/>
+            <div class="img-upload-placeholder">
+              <div class="upload-icon">🖼</div>
+              <span>Resim seçmek için tıkla</span>
+              <small>JPG, PNG, WEBP</small>
+            </div>
+            <img id="addImgPreview" class="img-upload-preview" alt=""/>
+            <div class="img-upload-badge" id="addImgBadge" style="display:none"></div>
+            <button type="button" class="img-upload-clear" onclick="clearAddImage(event)">✕ Kaldır</button>
+          </div>
+          <div class="img-path-row">
+            <input type="text" id="addImg" placeholder="Menü/Kategori/urun.webp" oninput="syncAddPathBadge()"/>
+          </div>
+          <div class="path-hint">📁 Dosya yolu: <code>assets/images/</code> + yazdığın yol</div>
+          <div class="upload-info-box">
+            <i-icon>ℹ️</i-icon>
+            <p>Resmi önizlemek için dosyayı seç. Yolu düzenleyebilirsin (örn. <code style="background:#dbeafe;color:#1d4ed8;padding:1px 4px;border-radius:3px;font-size:.68rem">Menü/Başlangıçlar/urun.webp</code>). Ardından bu dosyayı aynı yola <strong>git'e push</strong> etmeyi unutma.</p>
+          </div>
         </div>
-        <img id="addImgPreview" class="mini-preview" alt="" onerror="this.classList.remove('show')"/>
       </div>
 
       <!-- Bilingual fields -->
@@ -447,9 +487,24 @@ tbody tr:last-child td{border-bottom:none}
         <input type="text" id="editPrice" placeholder="350 veya 400 / 250"/>
       </div>
       <div class="form-group full">
-        <label>Görsel <small style="font-weight:400;text-transform:none;letter-spacing:0">(assets/images/ sonrası)</small></label>
-        <input type="text" id="editImg" oninput="updateImgPreview()"/>
-        <img id="editImgPreview" class="img-preview" src="" alt="" style="display:none"/>
+        <label>Görsel</label>
+        <div class="img-upload-wrap">
+          <div class="img-upload-box" id="editUploadBox">
+            <input type="file" accept="image/*" onchange="onEditImageSelect(this)"/>
+            <div class="img-upload-placeholder">
+              <div class="upload-icon">🖼</div>
+              <span>Yeni resim seçmek için tıkla</span>
+              <small>JPG, PNG, WEBP</small>
+            </div>
+            <img id="editImgPreview" class="img-upload-preview" alt=""/>
+            <div class="img-upload-badge" id="editImgBadge" style="display:none"></div>
+            <button type="button" class="img-upload-clear" onclick="clearEditImage(event)">✕ Kaldır</button>
+          </div>
+          <div class="img-path-row">
+            <input type="text" id="editImg" placeholder="Menü/Kategori/urun.webp" oninput="updateImgPreview()"/>
+          </div>
+          <div class="path-hint">📁 Dosya yolu: <code>assets/images/</code> + yazdığın yol</div>
+        </div>
       </div>
     </div>
     <!-- Bilingual fields -->
@@ -820,15 +875,25 @@ function openEdit(id){
   document.getElementById('editDescEn').value =en.p?(en.p.desc||''):'';
   populateCatDropdown('editCat',_editPage);
   document.getElementById('editCat').value=ref.cat;
+  // reset file input so old selection doesn't persist
+  const fileIn=document.querySelector('#editUploadBox input[type=file]');
+  if(fileIn) fileIn.value='';
   updateImgPreview();
   document.getElementById('editModal').classList.add('open');
 }
 function closeEditModal(){ document.getElementById('editModal').classList.remove('open'); }
 function updateImgPreview(){
   const v=document.getElementById('editImg').value.trim();
+  const box=document.getElementById('editUploadBox');
   const pr=document.getElementById('editImgPreview');
-  if(v){pr.src=`assets/images/${v}`;pr.style.display='block';}
-  else pr.style.display='none';
+  const badge=document.getElementById('editImgBadge');
+  if(v){
+    if(!pr.src.startsWith('data:')) pr.src=`assets/images/${v}`;
+    box.classList.add('has-img');
+    badge.textContent=v.split('/').pop(); badge.style.display='block';
+  } else {
+    if(!pr.src.startsWith('data:')){ pr.src=''; box.classList.remove('has-img'); badge.style.display='none'; }
+  }
 }
 function saveEdit(){
   const id=parseInt(document.getElementById('editId').value);
@@ -855,16 +920,74 @@ function openAddBar(){
   updateLangVisibility();
 }
 function closeAddBar(){ document.getElementById('addBar').classList.remove('open'); }
-function updateAddPreview(){
-  const v=document.getElementById('addImg').value.trim();
-  const pr=document.getElementById('addImgPreview');
-  if(v){ pr.src=`assets/images/${v}`; pr.classList.add('show'); }
-  else pr.classList.remove('show');
-}
+
 function updateLangVisibility(){
   const lang=document.getElementById('addLang').value;
   document.getElementById('addTrSec').style.display=(lang==='en')?'none':'';
   document.getElementById('addEnSec').style.display=(lang==='tr')?'none':'';
+}
+
+// ── Image upload helpers ────────────────────────────────
+function onAddImageSelect(input){
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const pr=document.getElementById('addImgPreview');
+    const box=document.getElementById('addUploadBox');
+    const badge=document.getElementById('addImgBadge');
+    pr.src=e.target.result;
+    box.classList.add('has-img');
+    badge.textContent=file.name; badge.style.display='block';
+    // auto-fill path with filename if field is empty
+    const pathInput=document.getElementById('addImg');
+    if(!pathInput.value.trim()) pathInput.value=file.name;
+    syncAddPathBadge();
+  };
+  reader.readAsDataURL(file);
+}
+function clearAddImage(e){
+  e.stopPropagation();
+  const box=document.getElementById('addUploadBox');
+  const pr=document.getElementById('addImgPreview');
+  const badge=document.getElementById('addImgBadge');
+  pr.src=''; box.classList.remove('has-img');
+  badge.style.display='none';
+  box.querySelector('input[type=file]').value='';
+}
+function syncAddPathBadge(){
+  const v=document.getElementById('addImg').value.trim();
+  const badge=document.getElementById('addImgBadge');
+  const pr=document.getElementById('addImgPreview');
+  if(v && !pr.src.startsWith('data:')){
+    pr.src='assets/images/'+v;
+    document.getElementById('addUploadBox').classList.add('has-img');
+    badge.textContent=v.split('/').pop(); badge.style.display='block';
+  }
+}
+function onEditImageSelect(input){
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const pr=document.getElementById('editImgPreview');
+    const box=document.getElementById('editUploadBox');
+    const badge=document.getElementById('editImgBadge');
+    pr.src=e.target.result;
+    box.classList.add('has-img');
+    badge.textContent=file.name; badge.style.display='block';
+    const pathInput=document.getElementById('editImg');
+    if(!pathInput.value.trim()) pathInput.value=file.name;
+  };
+  reader.readAsDataURL(file);
+}
+function clearEditImage(e){
+  e.stopPropagation();
+  const box=document.getElementById('editUploadBox');
+  const pr=document.getElementById('editImgPreview');
+  const badge=document.getElementById('editImgBadge');
+  pr.src=''; box.classList.remove('has-img');
+  badge.style.display='none';
+  box.querySelector('input[type=file]').value='';
+  document.getElementById('editImg').value='';
 }
 
 function addProduct(){
@@ -887,7 +1010,12 @@ function addProduct(){
   gPage=1;
   closeAddBar();
   ['addNameTr','addNameEn','addDescTr','addDescEn','addPrice','addImg'].forEach(id=>document.getElementById(id).value='');
-  updateAddPreview();
+  // reset image widget
+  const addBox=document.getElementById('addUploadBox');
+  const addPr=document.getElementById('addImgPreview');
+  const addBadge=document.getElementById('addImgBadge');
+  addPr.src=''; addBox.classList.remove('has-img'); addBadge.style.display='none';
+  const addFile=addBox.querySelector('input[type=file]'); if(addFile) addFile.value='';
   render();
   showToast('✓ Ürün eklendi!','success');
 }
