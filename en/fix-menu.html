@@ -85,9 +85,29 @@
 
     /* 2-col grid for mezes */
     .meze-grid{display:grid;grid-template-columns:1fr 1fr}
-    @media(max-width:560px){.meze-grid{grid-template-columns:1fr}}
     .meze-grid .fix-item{border-right:1px solid rgba(255,255,255,.04)}
     .meze-grid .fix-item:nth-child(even){border-right:none}
+
+    /* MOBILE */
+    @media(max-width:560px){
+      .fix-container{padding:0 12px}
+      /* tabs side by side */
+      .pricing-tabs{gap:7px;flex-wrap:nowrap;padding:0 4px}
+      .ptab{min-width:0;max-width:none;flex:1 1 0;padding:13px 7px;border-radius:12px}
+      .ptab-badge{font-size:.52rem;padding:2px 6px;margin-bottom:6px}
+      .ptab-name{font-size:.72rem;margin-bottom:8px}
+      .ptab-name br+span,.ptab-name span{font-size:.6rem!important}
+      .ptab-price{font-size:1.05rem}
+      .ptab-price span{font-size:.62rem}
+      .ptab-price-note{font-size:.58rem}
+      /* meze grid stays side by side on mobile */
+      .meze-grid .fix-item{padding:9px 10px}
+      .meze-grid .fix-item-name{font-size:.74rem;letter-spacing:.02em}
+      .meze-grid .fix-item-desc{font-size:.66rem}
+      .meze-grid .fix-item-dot{margin-top:6px}
+      .menu-block-header{padding:12px 14px}
+      .fix-item{padding:9px 14px}
+    }
 
     /* BALO NOTE */
     .balo-note{padding:14px 22px;background:rgba(130,80,200,.06);border-top:1px solid rgba(130,80,200,.15);display:flex;align-items:flex-start;gap:10px}
