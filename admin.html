@@ -336,15 +336,15 @@ tbody tr:last-child td{border-bottom:none}
             <button type="button" class="img-upload-clear" onclick="clearAddImage(event)">✕ Kaldır</button>
           </div>
           <div class="img-path-row">
-            <input type="text" id="addFolder" list="folderList" placeholder="📁 Klasör (örn. Izgaralar)" oninput="rebuildAddPath()" style="flex:0 0 42%"/>
-            <input type="text" id="addImg" placeholder="Menü/Izgaralar/urun.webp" oninput="syncAddPathBadge()"/>
+            <input type="text" id="addFolder" list="folderList" placeholder="📁 Klasör seç (örn. Izgaralar)" oninput="rebuildAddPath()" onchange="rebuildAddPath()" style="flex:0 0 46%"/>
+            <input type="text" id="addImg" placeholder="← Klasör seçince otomatik dolar" readonly style="background:#f1f5f9;color:var(--muted);cursor:default"/>
           </div>
-          <div class="path-hint">📁 Sunucu yolu: <code>assets/images/</code> + bu yol → FTP'de <code>wwwroot/assets/images/</code></div>
+          <div class="path-hint" id="addPathPreview" style="color:var(--text);font-weight:600">📁 Klasörü seç → yol otomatik oluşur</div>
           <div id="addDownloadHint" class="dl-hint" style="display:none">
             <span>⚡ 500×500 WebP hazır:</span>
             <code class="hint-filename"></code>
             <button class="hint-dl-btn btn btn-dark btn-sm">⬇ İndir</button>
-            <span style="color:var(--muted);font-size:.72rem">→ <code>assets/images/</code> klasörüne koy + push</span>
+            <span style="color:var(--muted);font-size:.72rem">→ FTP: <code>wwwroot/assets/images/</code> altına koy</span>
           </div>
         </div>
       </div>
@@ -504,10 +504,10 @@ tbody tr:last-child td{border-bottom:none}
             <button type="button" class="img-upload-clear" onclick="clearEditImage(event)">✕ Kaldır</button>
           </div>
           <div class="img-path-row">
-            <input type="text" id="editFolder" list="folderList" placeholder="📁 Klasör (örn. Izgaralar)" oninput="rebuildEditPath()" style="flex:0 0 42%"/>
-            <input type="text" id="editImg" placeholder="Menü/Izgaralar/urun.webp" oninput="updateImgPreview()"/>
+            <input type="text" id="editFolder" list="folderList" placeholder="📁 Klasör seç (örn. Izgaralar)" oninput="rebuildEditPath()" onchange="rebuildEditPath()" style="flex:0 0 46%"/>
+            <input type="text" id="editImg" placeholder="← Klasör seçince otomatik dolar" readonly style="background:#f1f5f9;color:var(--muted);cursor:default"/>
           </div>
-          <div class="path-hint">📁 Sunucu yolu: <code>assets/images/</code> + bu yol → FTP'de <code>wwwroot/assets/images/</code></div>
+          <div class="path-hint" id="editPathPreview" style="color:var(--text);font-weight:600">📁 Mevcut yol</div>
           <div id="editDownloadHint" class="dl-hint" style="display:none">
             <span>⚡ 500×500 WebP hazır:</span>
             <code class="hint-filename"></code>
@@ -919,6 +919,7 @@ function openEdit(id){
   // mevcut görsel yolundan klasörü ayrıştır (Menü/<Klasör>/dosya)
   const m=(ref.img||'').match(/^Menü\/([^/]+)\//);
   document.getElementById('editFolder').value=m?m[1]:'';
+  setPathField('editImg','editPathPreview',ref.img||'');
   // reset file input + işlenmiş veri
   const eBox=document.getElementById('editUploadBox');
   eBox._webpData=null; eBox._webpName=null;
@@ -938,8 +939,10 @@ function updateImgPreview(){
     if(!pr.src.startsWith('data:')) pr.src=`assets/images/${v}`;
     box.classList.add('has-img');
     badge.textContent=v.split('/').pop(); badge.style.display='block';
+    setPathField('editImg','editPathPreview',v);
   } else {
     if(!pr.src.startsWith('data:')){ pr.src=''; box.classList.remove('has-img'); badge.style.display='none'; }
+    setPathField('editImg','editPathPreview','');
   }
 }
 function saveEdit(){
@@ -1001,19 +1004,36 @@ function cropToWebP(file, callback) {
 
 // Klasör + dosya adından tam yol kur: Menü/<Klasör>/<dosya>.webp
 function buildImgPath(folder, filename) {
-  folder = (folder || '').trim().replace(/^\/+|\/+$/g, '');
-  if (!folder) return filename;
+  folder = (folder || '').trim().replace(/^[\/\s]+|[\/\s]+$/g, '');
+  filename = (filename || '').trim().replace(/^[\/\s]+/, '');
+  if (!folder || !filename) return filename || '';
   return 'Menü/' + folder + '/' + filename;
+}
+function setPathField(inputId, previewId, path) {
+  document.getElementById(inputId).value = path;
+  const el = document.getElementById(previewId);
+  if (el) el.innerHTML = path
+    ? '📁 <code style="background:var(--gold-lt);color:var(--gold);padding:2px 7px;border-radius:5px">' + path + '</code>'
+    : '📁 Klasörü seç → yol otomatik oluşur';
 }
 function rebuildAddPath() {
   const box = document.getElementById('addUploadBox');
+  const folder = document.getElementById('addFolder').value;
   const name = box._webpName;
-  if (name) document.getElementById('addImg').value = buildImgPath(document.getElementById('addFolder').value, name);
+  if (name) setPathField('addImg', 'addPathPreview', buildImgPath(folder, name));
+  else if (folder) setPathField('addImg', 'addPathPreview', 'Menü/' + folder.trim() + '/...');
 }
 function rebuildEditPath() {
   const box = document.getElementById('editUploadBox');
+  const folder = document.getElementById('editFolder').value;
   const name = box._webpName;
-  if (name) document.getElementById('editImg').value = buildImgPath(document.getElementById('editFolder').value, name);
+  if (name) setPathField('editImg', 'editPathPreview', buildImgPath(folder, name));
+  // klasör değişti ama yeni resim yok → mevcut dosya adını koru
+  else {
+    const cur = document.getElementById('editImg').value;
+    const curFile = cur.split('/').pop();
+    if (curFile) setPathField('editImg', 'editPathPreview', buildImgPath(folder, curFile));
+  }
 }
 
 // Add form
@@ -1030,7 +1050,7 @@ function onAddImageSelect(input) {
     badge.textContent = '500×500 WebP ✓'; badge.style.display = 'block';
     box._webpData = dataUrl;
     box._webpName = baseName;
-    document.getElementById('addImg').value = buildImgPath(document.getElementById('addFolder').value, baseName);
+    setPathField('addImg', 'addPathPreview', buildImgPath(document.getElementById('addFolder').value, baseName));
     showDownloadHint('addDownloadHint', dataUrl, baseName);
   });
 }
@@ -1071,7 +1091,7 @@ function onEditImageSelect(input) {
     const baseName = file.name.replace(/\.[^.]+$/, '') + '.webp';
     badge.textContent = '500×500 WebP ✓'; badge.style.display = 'block';
     box._webpData = dataUrl; box._webpName = baseName;
-    document.getElementById('editImg').value = buildImgPath(document.getElementById('editFolder').value, baseName);
+    setPathField('editImg', 'editPathPreview', buildImgPath(document.getElementById('editFolder').value, baseName));
     showDownloadHint('editDownloadHint', dataUrl, baseName);
   });
 }
