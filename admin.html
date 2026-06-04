@@ -979,6 +979,19 @@ function updateLangVisibility(){
 
 // ── Image upload helpers ────────────────────────────────
 
+// Türkçe/boşluklu dosya adını ASCII-güvenli .webp adına çevir
+function slugifyName(filename) {
+  var base = filename.replace(/\.[^.]+$/, ''); // uzantıyı at
+  var map = {'ş':'s','Ş':'s','ı':'i','İ':'i','ğ':'g','Ğ':'g','ü':'u','Ü':'u','ö':'o','Ö':'o','ç':'c','Ç':'c'};
+  base = base.replace(/[şŞıİğĞüÜöÖçÇ]/g, function(c){ return map[c]||c; });
+  base = base.toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')   // harf/rakam dışını - yap
+    .replace(/^-+|-+$/g, '')        // baştaki/sondaki - temizle
+    .replace(/-{2,}/g, '-');        // çift - tekle
+  if (!base) base = 'urun';
+  return base + '.webp';
+}
+
 // Canvas ile merkezi kırpma + WebP dönüştürme
 function cropToWebP(file, callback) {
   const img = new Image();
@@ -1047,8 +1060,8 @@ function onAddImageSelect(input) {
     const badge = document.getElementById('addImgBadge');
     pr.src = dataUrl;
     box.classList.add('has-img');
-    // yol: dosya adının .webp versiyonu (varsa klasörle birlikte)
-    const baseName = file.name.replace(/\.[^.]+$/, '') + '.webp';
+    // yol: ASCII-güvenli .webp adı (varsa klasörle birlikte)
+    const baseName = slugifyName(file.name);
     badge.textContent = '500×500 WebP ✓'; badge.style.display = 'block';
     box._webpData = dataUrl;
     box._webpName = baseName;
@@ -1090,7 +1103,7 @@ function onEditImageSelect(input) {
     const badge = document.getElementById('editImgBadge');
     pr.src = dataUrl;
     box.classList.add('has-img');
-    const baseName = file.name.replace(/\.[^.]+$/, '') + '.webp';
+    const baseName = slugifyName(file.name);
     badge.textContent = '500×500 WebP ✓'; badge.style.display = 'block';
     box._webpData = dataUrl; box._webpName = baseName;
     setPathField('editImg', 'editPathPreview', buildImgPath(document.getElementById('editFolder').value, baseName));
