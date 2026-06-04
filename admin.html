@@ -344,7 +344,7 @@ tbody tr:last-child td{border-bottom:none}
             <span>⚡ 500×500 WebP hazır:</span>
             <code class="hint-filename"></code>
             <button class="hint-dl-btn btn btn-dark btn-sm">⬇ İndir</button>
-            <span style="color:var(--muted);font-size:.72rem">→ FTP: <code>wwwroot/assets/images/</code> altına koy</span>
+            <span class="hint-target" style="color:var(--muted);font-size:.72rem;width:100%"></span>
           </div>
         </div>
       </div>
@@ -512,7 +512,7 @@ tbody tr:last-child td{border-bottom:none}
             <span>⚡ 500×500 WebP hazır:</span>
             <code class="hint-filename"></code>
             <button class="hint-dl-btn btn btn-dark btn-sm">⬇ İndir</button>
-            <span style="color:var(--muted);font-size:.72rem">→ <code>assets/images/</code> klasörüne koy + push</span>
+            <span class="hint-target" style="color:var(--muted);font-size:.72rem;width:100%"></span>
           </div>
         </div>
       </div>
@@ -1022,6 +1022,7 @@ function rebuildAddPath() {
   const name = box._webpName;
   if (name) setPathField('addImg', 'addPathPreview', buildImgPath(folder, name));
   else if (folder) setPathField('addImg', 'addPathPreview', 'Menü/' + folder.trim() + '/...');
+  updateHintTarget('addDownloadHint');
 }
 function rebuildEditPath() {
   const box = document.getElementById('editUploadBox');
@@ -1034,6 +1035,7 @@ function rebuildEditPath() {
     const curFile = cur.split('/').pop();
     if (curFile) setPathField('editImg', 'editPathPreview', buildImgPath(folder, curFile));
   }
+  updateHintTarget('editDownloadHint');
 }
 
 // Add form
@@ -1119,6 +1121,22 @@ function showDownloadHint(hintId, dataUrl, name) {
     const a = document.createElement('a');
     a.href = dataUrl; a.download = name; a.click();
   };
+  updateHintTarget(hintId);
+}
+// İndirme kutusunda tam FTP hedef yolunu göster
+function updateHintTarget(hintId) {
+  const hint = document.getElementById(hintId);
+  if (!hint) return;
+  const pathFieldId = (hintId === 'addDownloadHint') ? 'addImg' : 'editImg';
+  const fullPath = (document.getElementById(pathFieldId).value || '').trim();
+  const targetEl = hint.querySelector('.hint-target');
+  if (!targetEl) return;
+  if (fullPath) {
+    const folder = fullPath.substring(0, fullPath.lastIndexOf('/') + 1); // Menü/Izgaralar/
+    targetEl.innerHTML = '→ FTP\'de tam buraya at: <code>wwwroot/assets/images/' + folder + '</code>';
+  } else {
+    targetEl.innerHTML = '→ Önce klasör seç';
+  }
 }
 
 function addProduct(){
