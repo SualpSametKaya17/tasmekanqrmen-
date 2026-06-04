@@ -1006,7 +1006,12 @@ function addProduct(){
   if(lang==='tr'||lang==='both'){ if(!gData.tr[page]) gData.tr[page]=[]; gData.tr[page].push({...base,name:nameTr,desc:descTr}); }
   if(lang==='en'||lang==='both'){ if(!gData.en[page]) gData.en[page]=[]; gData.en[page].push({...base,name:nameEn||nameTr,desc:descEn||descTr}); }
   saveData();
+  // Eklenen ürünü garantili göstermek için filtreleri temizle
+  document.getElementById('filterLang').value=(lang==='en')?'en':'tr';
   document.getElementById('filterPage').value=page;
+  document.getElementById('filterCat').value='';
+  document.getElementById('filterStatus').value='all';
+  document.getElementById('searchBox').value='';
   gPage=1;
   closeAddBar();
   ['addNameTr','addNameEn','addDescTr','addDescEn','addPrice','addImg'].forEach(id=>document.getElementById(id).value='');
@@ -1017,7 +1022,9 @@ function addProduct(){
   addPr.src=''; addBox.classList.remove('has-img'); addBadge.style.display='none';
   const addFile=addBox.querySelector('input[type=file]'); if(addFile) addFile.value='';
   render();
-  showToast('✓ Ürün eklendi!','success');
+  // yeni ürün listenin sonunda -> son sayfaya git
+  goPage(99999);
+  showToast('✓ Ürün eklendi! (Online görünmesi için "Dışa Aktar" + push)','success');
 }
 
 // ═══ CATEGORIES ══════════════════════════════════════════
