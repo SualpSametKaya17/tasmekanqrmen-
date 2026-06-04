@@ -103,7 +103,7 @@ body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);colo
 
 /* ── ADD PANEL ── */
 .add-panel{background:var(--surface);border-bottom:1px solid var(--border);overflow:hidden;max-height:0;transition:max-height .35s ease}
-.add-panel.open{max-height:800px}
+.add-panel.open{max-height:1100px}
 .add-panel-inner{padding:20px 24px}
 .add-panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .add-panel-title{font-size:.92rem;font-weight:700;color:var(--dark)}
@@ -192,6 +192,26 @@ tbody tr:last-child td{border-bottom:none}
 /* ── SECTION HEADER ── */
 .sec-header{padding:14px 24px 10px;display:flex;align-items:center;justify-content:space-between}
 .sec-title{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+
+/* ── LANG SECTION ── */
+.lang-section{border:1.5px solid var(--border);border-radius:12px;padding:16px;margin-top:14px;background:var(--surface2)}
+.lang-section.tr-sec{border-left:4px solid #e30a17}
+.lang-section.en-sec{border-left:4px solid #1d3a8a}
+.lang-flag{display:flex;align-items:center;gap:8px;font-size:.82rem;font-weight:700;color:var(--dark);margin-bottom:12px}
+.lang-flag .flag-emoji{font-size:1.1rem}
+.lang-fields{display:flex;flex-direction:column;gap:12px}
+
+/* ── ADD CARD (modern) ── */
+.add-shared{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+@media(max-width:760px){.add-shared{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.add-shared{grid-template-columns:1fr}}
+.add-langs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+@media(max-width:760px){.add-langs{grid-template-columns:1fr}}
+.add-img-row{display:flex;gap:14px;align-items:flex-start;margin-top:14px}
+.add-img-row .form-group{flex:1}
+.mini-preview{width:86px;height:64px;object-fit:cover;border-radius:8px;border:1.5px solid var(--border);background:var(--surface2);flex-shrink:0;display:none}
+.mini-preview.show{display:block}
+.field-hint{font-size:.7rem;color:var(--muted2);font-weight:400;text-transform:none;letter-spacing:0}
 </style>
 </head>
 <body>
@@ -244,17 +264,19 @@ tbody tr:last-child td{border-bottom:none}
   <div class="add-panel" id="addBar">
     <div class="add-panel-inner">
       <div class="add-panel-header">
-        <div class="add-panel-title">Yeni Ürün Ekle</div>
+        <div class="add-panel-title">✚ Yeni Ürün Ekle</div>
         <div style="display:flex;gap:8px;align-items:center">
-          <label style="font-size:.75rem;color:var(--muted);font-weight:600">Dil:</label>
-          <select id="addLang" style="background:var(--surface2);border:1.5px solid var(--border);color:var(--text);border-radius:8px;padding:6px 10px;font-size:.82rem">
-            <option value="both">TR + EN</option>
-            <option value="tr">Yalnız TR</option>
-            <option value="en">Yalnız EN</option>
+          <label style="font-size:.75rem;color:var(--muted);font-weight:600">Hangi dillere?</label>
+          <select id="addLang" style="background:var(--surface2);border:1.5px solid var(--border);color:var(--text);border-radius:8px;padding:6px 10px;font-size:.82rem" onchange="updateLangVisibility()">
+            <option value="both">🇹🇷 TR + 🇬🇧 EN</option>
+            <option value="tr">Yalnız 🇹🇷 TR</option>
+            <option value="en">Yalnız 🇬🇧 EN</option>
           </select>
         </div>
       </div>
-      <div class="add-grid">
+
+      <!-- Shared fields -->
+      <div class="add-shared">
         <div class="form-group">
           <label>Menü Sayfası</label>
           <select id="addPage" onchange="populateCatDropdown('addCatSel', this.value)">
@@ -273,27 +295,47 @@ tbody tr:last-child td{border-bottom:none}
           <label>Fiyat (TL)</label>
           <input type="text" id="addPrice" placeholder="350 veya 400 / 250"/>
         </div>
+      </div>
+
+      <!-- Image with live preview -->
+      <div class="add-img-row">
         <div class="form-group">
-          <label>Ürün Adı (TR)</label>
-          <input type="text" id="addNameTr" placeholder="Türkçe ad"/>
+          <label>Görsel <small class="field-hint">(assets/images/ sonrası)</small></label>
+          <input type="text" id="addImg" placeholder="Menü/Kategori/urun.webp" oninput="updateAddPreview()"/>
         </div>
-        <div class="form-group">
-          <label>Ürün Adı (EN)</label>
-          <input type="text" id="addNameEn" placeholder="İngilizce ad"/>
+        <img id="addImgPreview" class="mini-preview" alt="" onerror="this.classList.remove('show')"/>
+      </div>
+
+      <!-- Bilingual fields -->
+      <div class="add-langs">
+        <div class="lang-section tr-sec" id="addTrSec">
+          <div class="lang-flag"><span class="flag-emoji">🇹🇷</span> Türkçe</div>
+          <div class="lang-fields">
+            <div class="form-group">
+              <label>Ürün Adı</label>
+              <input type="text" id="addNameTr" placeholder="Türkçe ad"/>
+            </div>
+            <div class="form-group">
+              <label>Açıklama</label>
+              <input type="text" id="addDescTr" placeholder="Türkçe açıklama"/>
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label>Görsel <small style="font-weight:400;text-transform:none;letter-spacing:0">(assets/images/ sonrası)</small></label>
-          <input type="text" id="addImg" placeholder="Menü/Kategori/urun.webp"/>
-        </div>
-        <div class="form-group span2">
-          <label>Açıklama (TR)</label>
-          <input type="text" id="addDescTr" placeholder="Türkçe açıklama"/>
-        </div>
-        <div class="form-group span2">
-          <label>Açıklama (EN)</label>
-          <input type="text" id="addDescEn" placeholder="İngilizce açıklama"/>
+        <div class="lang-section en-sec" id="addEnSec">
+          <div class="lang-flag"><span class="flag-emoji">🇬🇧</span> English</div>
+          <div class="lang-fields">
+            <div class="form-group">
+              <label>Product Name</label>
+              <input type="text" id="addNameEn" placeholder="English name"/>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <input type="text" id="addDescEn" placeholder="English description"/>
+            </div>
+          </div>
         </div>
       </div>
+
       <div style="display:flex;gap:10px;margin-top:18px">
         <button class="btn btn-dark" onclick="addProduct()">✚ Ekle</button>
         <button class="btn btn-ghost" onclick="closeAddBar()">İptal</button>
@@ -394,11 +436,8 @@ tbody tr:last-child td{border-bottom:none}
       <button class="close-btn" onclick="closeEditModal()">✕</button>
     </div>
     <input type="hidden" id="editId"/>
+    <!-- Shared fields -->
     <div class="modal-grid">
-      <div class="form-group full">
-        <label>Ürün Adı</label>
-        <input type="text" id="editName"/>
-      </div>
       <div class="form-group">
         <label>Kategori</label>
         <select id="editCat"></select>
@@ -408,13 +447,24 @@ tbody tr:last-child td{border-bottom:none}
         <input type="text" id="editPrice" placeholder="350 veya 400 / 250"/>
       </div>
       <div class="form-group full">
-        <label>Açıklama</label>
-        <textarea id="editDesc"></textarea>
-      </div>
-      <div class="form-group full">
         <label>Görsel <small style="font-weight:400;text-transform:none;letter-spacing:0">(assets/images/ sonrası)</small></label>
         <input type="text" id="editImg" oninput="updateImgPreview()"/>
         <img id="editImgPreview" class="img-preview" src="" alt="" style="display:none"/>
+      </div>
+    </div>
+    <!-- Bilingual fields -->
+    <div class="lang-section tr-sec">
+      <div class="lang-flag"><span class="flag-emoji">🇹🇷</span> Türkçe</div>
+      <div class="lang-fields">
+        <div class="form-group"><label>Ürün Adı</label><input type="text" id="editNameTr"/></div>
+        <div class="form-group"><label>Açıklama</label><textarea id="editDescTr"></textarea></div>
+      </div>
+    </div>
+    <div class="lang-section en-sec">
+      <div class="lang-flag"><span class="flag-emoji">🇬🇧</span> English</div>
+      <div class="lang-fields">
+        <div class="form-group"><label>Product Name</label><input type="text" id="editNameEn"/></div>
+        <div class="form-group"><label>Description</label><textarea id="editDescEn"></textarea></div>
       </div>
     </div>
     <div class="modal-footer">
@@ -668,7 +718,7 @@ function render(){
       <td class="price-cell" title="Düzenlemek için tıkla" onclick="inlineEditPrice(${p.id}, this)" style="cursor:pointer">${p.price?p.price+' ₺':'—'}</td>
       <td><span class="status-badge ${p.active?'status-active':'status-inactive'}">${p.active?'Aktif':'İnaktif'}</span></td>
       <td><div class="actions-cell">
-        <button class="btn btn-ghost btn-sm" onclick="openEdit(${p.id},'${lang}')">Düzenle</button>
+        <button class="btn btn-ghost btn-sm" onclick="openEdit(${p.id})">Düzenle</button>
         <button class="btn ${p.active?'btn-ghost':'btn-green'} btn-sm" onclick="toggleActive(${p.id})">${p.active?'Gizle':'Göster'}</button>
         <button class="btn btn-red btn-sm" onclick="deleteProduct(${p.id})">Sil</button>
       </div></td>
@@ -747,20 +797,29 @@ function deleteProduct(id){
 }
 
 // ═══ EDIT MODAL ══════════════════════════════════════════
-var _editLang='tr', _editPage='yiyecekler';
-function openEdit(id,lang){
-  _editLang=lang;
-  const pages=Object.keys(gData[lang]||{});
-  let p=null;
-  for(const pg of pages){ p=(gData[lang][pg]||[]).find(x=>x.id===id); if(p){_editPage=pg;break;} }
-  if(!p) return;
-  document.getElementById('editId').value    =id;
-  document.getElementById('editName').value  =p.name;
-  document.getElementById('editPrice').value =p.price;
-  document.getElementById('editDesc').value  =p.desc||'';
-  document.getElementById('editImg').value   =p.img||'';
+var _editPage='yiyecekler';
+function findInLang(lang,id){
+  for(const pg of Object.keys(gData[lang]||{})){
+    const arr=gData[lang][pg];
+    if(Array.isArray(arr)){ const p=arr.find(x=>x.id===id); if(p) return {p,pg}; }
+  }
+  return {p:null,pg:null};
+}
+function openEdit(id){
+  const tr=findInLang('tr',id);
+  const en=findInLang('en',id);
+  const ref=tr.p||en.p;
+  if(!ref) return;
+  _editPage=tr.pg||en.pg;
+  document.getElementById('editId').value     =id;
+  document.getElementById('editPrice').value  =ref.price;
+  document.getElementById('editImg').value    =ref.img||'';
+  document.getElementById('editNameTr').value =tr.p?(tr.p.name||''):'';
+  document.getElementById('editDescTr').value =tr.p?(tr.p.desc||''):'';
+  document.getElementById('editNameEn').value =en.p?(en.p.name||''):'';
+  document.getElementById('editDescEn').value =en.p?(en.p.desc||''):'';
   populateCatDropdown('editCat',_editPage);
-  document.getElementById('editCat').value=p.cat;
+  document.getElementById('editCat').value=ref.cat;
   updateImgPreview();
   document.getElementById('editModal').classList.add('open');
 }
@@ -773,24 +832,40 @@ function updateImgPreview(){
 }
 function saveEdit(){
   const id=parseInt(document.getElementById('editId').value);
-  const name=document.getElementById('editName').value.trim();
-  const cat =document.getElementById('editCat').value.trim();
+  const cat  =document.getElementById('editCat').value.trim();
   const price=document.getElementById('editPrice').value.trim()||0;
-  const desc=document.getElementById('editDesc').value.trim();
-  const img =document.getElementById('editImg').value.trim();
-  const p=(gData[_editLang]?.[_editPage]||[]).find(x=>x.id===id);
-  if(p){p.name=name;p.cat=cat;p.price=price;p.desc=desc;p.img=img;}
-  allById(id).forEach(x=>{if(x!==p){x.price=price;x.cat=cat;x.img=img;}});
+  const img  =document.getElementById('editImg').value.trim();
+  const nameTr=document.getElementById('editNameTr').value.trim();
+  const descTr=document.getElementById('editDescTr').value.trim();
+  const nameEn=document.getElementById('editNameEn').value.trim();
+  const descEn=document.getElementById('editDescEn').value.trim();
+  // ortak alanlar her iki dile uygulanır
+  allById(id).forEach(x=>{ x.cat=cat; x.price=price; x.img=img; });
+  // dile özgü alanlar
+  const tr=findInLang('tr',id); if(tr.p){ tr.p.name=nameTr; tr.p.desc=descTr; }
+  const en=findInLang('en',id); if(en.p){ en.p.name=nameEn; en.p.desc=descEn; }
   saveData(); closeEditModal(); render();
-  showToast('✓ Kaydedildi.','success');
+  showToast('✓ Kaydedildi (TR + EN).','success');
 }
 
 // ═══ ADD PRODUCT ═════════════════════════════════════════
 function openAddBar(){
   document.getElementById('addBar').classList.add('open');
   populateCatDropdown('addCatSel',document.getElementById('addPage').value);
+  updateLangVisibility();
 }
 function closeAddBar(){ document.getElementById('addBar').classList.remove('open'); }
+function updateAddPreview(){
+  const v=document.getElementById('addImg').value.trim();
+  const pr=document.getElementById('addImgPreview');
+  if(v){ pr.src=`assets/images/${v}`; pr.classList.add('show'); }
+  else pr.classList.remove('show');
+}
+function updateLangVisibility(){
+  const lang=document.getElementById('addLang').value;
+  document.getElementById('addTrSec').style.display=(lang==='en')?'none':'';
+  document.getElementById('addEnSec').style.display=(lang==='tr')?'none':'';
+}
 
 function addProduct(){
   const page  =document.getElementById('addPage').value;
@@ -812,6 +887,7 @@ function addProduct(){
   gPage=1;
   closeAddBar();
   ['addNameTr','addNameEn','addDescTr','addDescEn','addPrice','addImg'].forEach(id=>document.getElementById(id).value='');
+  updateAddPreview();
   render();
   showToast('✓ Ürün eklendi!','success');
 }
