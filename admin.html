@@ -336,9 +336,10 @@ tbody tr:last-child td{border-bottom:none}
             <button type="button" class="img-upload-clear" onclick="clearAddImage(event)">✕ Kaldır</button>
           </div>
           <div class="img-path-row">
-            <input type="text" id="addImg" placeholder="Menü/Kategori/urun.webp" oninput="syncAddPathBadge()"/>
+            <input type="text" id="addFolder" list="folderList" placeholder="📁 Klasör (örn. Izgaralar)" oninput="rebuildAddPath()" style="flex:0 0 42%"/>
+            <input type="text" id="addImg" placeholder="Menü/Izgaralar/urun.webp" oninput="syncAddPathBadge()"/>
           </div>
-          <div class="path-hint">📁 <code>assets/images/</code> + yazdığın yol</div>
+          <div class="path-hint">📁 Sunucu yolu: <code>assets/images/</code> + bu yol → FTP'de <code>wwwroot/assets/images/</code></div>
           <div id="addDownloadHint" class="dl-hint" style="display:none">
             <span>⚡ 500×500 WebP hazır:</span>
             <code class="hint-filename"></code>
@@ -503,9 +504,10 @@ tbody tr:last-child td{border-bottom:none}
             <button type="button" class="img-upload-clear" onclick="clearEditImage(event)">✕ Kaldır</button>
           </div>
           <div class="img-path-row">
-            <input type="text" id="editImg" placeholder="Menü/Kategori/urun.webp" oninput="updateImgPreview()"/>
+            <input type="text" id="editFolder" list="folderList" placeholder="📁 Klasör (örn. Izgaralar)" oninput="rebuildEditPath()" style="flex:0 0 42%"/>
+            <input type="text" id="editImg" placeholder="Menü/Izgaralar/urun.webp" oninput="updateImgPreview()"/>
           </div>
-          <div class="path-hint">📁 <code>assets/images/</code> + yazdığın yol</div>
+          <div class="path-hint">📁 Sunucu yolu: <code>assets/images/</code> + bu yol → FTP'de <code>wwwroot/assets/images/</code></div>
           <div id="editDownloadHint" class="dl-hint" style="display:none">
             <span>⚡ 500×500 WebP hazır:</span>
             <code class="hint-filename"></code>
@@ -577,6 +579,37 @@ tbody tr:last-child td{border-bottom:none}
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- Görsel klasör listesi (assets/images/Menü/ altındakiler) -->
+<datalist id="folderList">
+  <option value="Alkoller"></option>
+  <option value="Atıştırmalıklar"></option>
+  <option value="Başlangıçlar"></option>
+  <option value="Deniz ürünleri"></option>
+  <option value="Diyet Menü"></option>
+  <option value="Dürümler"></option>
+  <option value="Et Menü"></option>
+  <option value="Ev Yapımı Burgerler"></option>
+  <option value="Fajita Menü"></option>
+  <option value="Hamburgerler"></option>
+  <option value="Izgaralar"></option>
+  <option value="Kahvaltılıklar"></option>
+  <option value="Kahveler"></option>
+  <option value="Krepler"></option>
+  <option value="Makarnalar"></option>
+  <option value="Nargileler"></option>
+  <option value="Pastane"></option>
+  <option value="Pizzalar"></option>
+  <option value="Salatalar"></option>
+  <option value="Sandviç ve tostlar"></option>
+  <option value="Soğuk Kahveler"></option>
+  <option value="Tavuk Menüler"></option>
+  <option value="Vejetaryen menü"></option>
+  <option value="Çaylar"></option>
+  <option value="Çocuk menüsü"></option>
+  <option value="Çorbalar"></option>
+  <option value="İçecekler"></option>
+</datalist>
 
 <script src="assets/js/menu-data.js"></script>
 <script>
@@ -883,9 +916,15 @@ function openEdit(id){
   document.getElementById('editDescEn').value =en.p?(en.p.desc||''):'';
   populateCatDropdown('editCat',_editPage);
   document.getElementById('editCat').value=ref.cat;
-  // reset file input so old selection doesn't persist
-  const fileIn=document.querySelector('#editUploadBox input[type=file]');
+  // mevcut görsel yolundan klasörü ayrıştır (Menü/<Klasör>/dosya)
+  const m=(ref.img||'').match(/^Menü\/([^/]+)\//);
+  document.getElementById('editFolder').value=m?m[1]:'';
+  // reset file input + işlenmiş veri
+  const eBox=document.getElementById('editUploadBox');
+  eBox._webpData=null; eBox._webpName=null;
+  const fileIn=eBox.querySelector('input[type=file]');
   if(fileIn) fileIn.value='';
+  const eHint=document.getElementById('editDownloadHint'); if(eHint) eHint.style.display='none';
   updateImgPreview();
   document.getElementById('editModal').classList.add('open');
 }
@@ -960,6 +999,23 @@ function cropToWebP(file, callback) {
   img.src = url;
 }
 
+// Klasör + dosya adından tam yol kur: Menü/<Klasör>/<dosya>.webp
+function buildImgPath(folder, filename) {
+  folder = (folder || '').trim().replace(/^\/+|\/+$/g, '');
+  if (!folder) return filename;
+  return 'Menü/' + folder + '/' + filename;
+}
+function rebuildAddPath() {
+  const box = document.getElementById('addUploadBox');
+  const name = box._webpName;
+  if (name) document.getElementById('addImg').value = buildImgPath(document.getElementById('addFolder').value, name);
+}
+function rebuildEditPath() {
+  const box = document.getElementById('editUploadBox');
+  const name = box._webpName;
+  if (name) document.getElementById('editImg').value = buildImgPath(document.getElementById('editFolder').value, name);
+}
+
 // Add form
 function onAddImageSelect(input) {
   const file = input.files[0]; if (!file) return;
@@ -969,15 +1025,12 @@ function onAddImageSelect(input) {
     const badge = document.getElementById('addImgBadge');
     pr.src = dataUrl;
     box.classList.add('has-img');
-    // yol: dosya adının .webp versiyonu
+    // yol: dosya adının .webp versiyonu (varsa klasörle birlikte)
     const baseName = file.name.replace(/\.[^.]+$/, '') + '.webp';
     badge.textContent = '500×500 WebP ✓'; badge.style.display = 'block';
-    const pathInput = document.getElementById('addImg');
-    if (!pathInput.value.trim()) pathInput.value = baseName;
-    // işlenmiş dataUrl'i input'a bağla (kayıt sırasında kullanılır)
     box._webpData = dataUrl;
     box._webpName = baseName;
-    // İndir butonu göster
+    document.getElementById('addImg').value = buildImgPath(document.getElementById('addFolder').value, baseName);
     showDownloadHint('addDownloadHint', dataUrl, baseName);
   });
 }
@@ -990,6 +1043,7 @@ function clearAddImage(e) {
   badge.style.display = 'none';
   box.querySelector('input[type=file]').value = '';
   box._webpData = null; box._webpName = null;
+  document.getElementById('addImg').value = '';
   const hint = document.getElementById('addDownloadHint');
   if (hint) hint.style.display = 'none';
 }
@@ -1016,9 +1070,8 @@ function onEditImageSelect(input) {
     box.classList.add('has-img');
     const baseName = file.name.replace(/\.[^.]+$/, '') + '.webp';
     badge.textContent = '500×500 WebP ✓'; badge.style.display = 'block';
-    const pathInput = document.getElementById('editImg');
-    if (!pathInput.value.trim()) pathInput.value = baseName;
     box._webpData = dataUrl; box._webpName = baseName;
+    document.getElementById('editImg').value = buildImgPath(document.getElementById('editFolder').value, baseName);
     showDownloadHint('editDownloadHint', dataUrl, baseName);
   });
 }
@@ -1078,6 +1131,9 @@ function addProduct(){
   const addPr=document.getElementById('addImgPreview');
   const addBadge=document.getElementById('addImgBadge');
   addPr.src=''; addBox.classList.remove('has-img'); addBadge.style.display='none';
+  addBox._webpData=null; addBox._webpName=null;
+  document.getElementById('addFolder').value='';
+  const addDlHint=document.getElementById('addDownloadHint'); if(addDlHint) addDlHint.style.display='none';
   const addFile=addBox.querySelector('input[type=file]'); if(addFile) addFile.value='';
   render();
   // yeni ürün listenin sonunda -> son sayfaya git
