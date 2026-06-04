@@ -954,6 +954,7 @@ function saveEdit(){
   const descTr=document.getElementById('editDescTr').value.trim();
   const nameEn=document.getElementById('editNameEn').value.trim();
   const descEn=document.getElementById('editDescEn').value.trim();
+  if(img && !img.startsWith('Menü/')){ showToast('⚠ Görsel için KLASÖR seç (örn. Izgaralar). Yol "Menü/..." ile başlamalı.','error'); return; }
   // ortak alanlar her iki dile uygulanır
   allById(id).forEach(x=>{ x.cat=cat; x.price=price; x.img=img; });
   // dile özgü alanlar
@@ -1163,6 +1164,7 @@ function addProduct(){
   const img   =document.getElementById('addImg').value.trim();
   const lang  =document.getElementById('addLang').value;
   if(!cat||!nameTr){ showToast('Kategori ve Türkçe ad zorunludur.','error'); return; }
+  if(img && !img.startsWith('Menü/')){ showToast('⚠ Görsel için önce KLASÖR seçmelisin (örn. Izgaralar). Yol "Menü/..." ile başlamalı.','error'); return; }
   const id=nextId();
   const base={id,active:true,cat,img,price};
   if(lang==='tr'||lang==='both'){ if(!gData.tr[page]) gData.tr[page]=[]; gData.tr[page].push({...base,name:nameTr,desc:descTr}); }
