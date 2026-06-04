@@ -232,9 +232,9 @@ tbody tr:last-child td{border-bottom:none}
 .img-path-row input{flex:1}
 .path-hint{font-size:.7rem;color:var(--muted2);display:flex;align-items:center;gap:4px;padding:4px 0}
 .path-hint code{background:var(--gold-lt);color:var(--gold);padding:1px 5px;border-radius:4px;font-size:.68rem}
-.upload-info-box{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 12px;display:flex;gap:8px;align-items:flex-start}
-.upload-info-box i-icon{color:#3b82f6;font-size:.9rem;flex-shrink:0}
-.upload-info-box p{margin:0;font-size:.75rem;color:#1d4ed8;line-height:1.5}
+.dl-hint{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:9px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.dl-hint span{font-size:.76rem;color:#166534;font-weight:600}
+.dl-hint code{background:#dcfce7;color:#15803d;padding:2px 7px;border-radius:5px;font-size:.74rem}
 </style>
 </head>
 <body>
@@ -338,10 +338,12 @@ tbody tr:last-child td{border-bottom:none}
           <div class="img-path-row">
             <input type="text" id="addImg" placeholder="Menü/Kategori/urun.webp" oninput="syncAddPathBadge()"/>
           </div>
-          <div class="path-hint">📁 Dosya yolu: <code>assets/images/</code> + yazdığın yol</div>
-          <div class="upload-info-box">
-            <i-icon>ℹ️</i-icon>
-            <p>Resmi önizlemek için dosyayı seç. Yolu düzenleyebilirsin (örn. <code style="background:#dbeafe;color:#1d4ed8;padding:1px 4px;border-radius:3px;font-size:.68rem">Menü/Başlangıçlar/urun.webp</code>). Ardından bu dosyayı aynı yola <strong>git'e push</strong> etmeyi unutma.</p>
+          <div class="path-hint">📁 <code>assets/images/</code> + yazdığın yol</div>
+          <div id="addDownloadHint" class="dl-hint" style="display:none">
+            <span>⚡ 500×500 WebP hazır:</span>
+            <code class="hint-filename"></code>
+            <button class="hint-dl-btn btn btn-dark btn-sm">⬇ İndir</button>
+            <span style="color:var(--muted);font-size:.72rem">→ <code>assets/images/</code> klasörüne koy + push</span>
           </div>
         </div>
       </div>
@@ -503,7 +505,13 @@ tbody tr:last-child td{border-bottom:none}
           <div class="img-path-row">
             <input type="text" id="editImg" placeholder="Menü/Kategori/urun.webp" oninput="updateImgPreview()"/>
           </div>
-          <div class="path-hint">📁 Dosya yolu: <code>assets/images/</code> + yazdığın yol</div>
+          <div class="path-hint">📁 <code>assets/images/</code> + yazdığın yol</div>
+          <div id="editDownloadHint" class="dl-hint" style="display:none">
+            <span>⚡ 500×500 WebP hazır:</span>
+            <code class="hint-filename"></code>
+            <button class="hint-dl-btn btn btn-dark btn-sm">⬇ İndir</button>
+            <span style="color:var(--muted);font-size:.72rem">→ <code>assets/images/</code> klasörüne koy + push</span>
+          </div>
         </div>
       </div>
     </div>
@@ -928,66 +936,116 @@ function updateLangVisibility(){
 }
 
 // ── Image upload helpers ────────────────────────────────
-function onAddImageSelect(input){
-  const file=input.files[0]; if(!file) return;
-  const reader=new FileReader();
-  reader.onload=function(e){
-    const pr=document.getElementById('addImgPreview');
-    const box=document.getElementById('addUploadBox');
-    const badge=document.getElementById('addImgBadge');
-    pr.src=e.target.result;
-    box.classList.add('has-img');
-    badge.textContent=file.name; badge.style.display='block';
-    // auto-fill path with filename if field is empty
-    const pathInput=document.getElementById('addImg');
-    if(!pathInput.value.trim()) pathInput.value=file.name;
-    syncAddPathBadge();
+
+// Canvas ile merkezi kırpma + WebP dönüştürme
+function cropToWebP(file, callback) {
+  const img = new Image();
+  const url = URL.createObjectURL(file);
+  img.onload = function() {
+    const SIZE = 500;
+    const canvas = document.createElement('canvas');
+    canvas.width = SIZE; canvas.height = SIZE;
+    const ctx = canvas.getContext('2d');
+    // cover crop: kısa kenar 500px, merkezi al
+    const ratio = Math.max(SIZE / img.width, SIZE / img.height);
+    const dw = img.width * ratio;
+    const dh = img.height * ratio;
+    const dx = (SIZE - dw) / 2;
+    const dy = (SIZE - dh) / 2;
+    ctx.drawImage(img, dx, dy, dw, dh);
+    URL.revokeObjectURL(url);
+    const dataUrl = canvas.toDataURL('image/webp', 0.88);
+    callback(dataUrl);
   };
-  reader.readAsDataURL(file);
+  img.src = url;
 }
-function clearAddImage(e){
+
+// Add form
+function onAddImageSelect(input) {
+  const file = input.files[0]; if (!file) return;
+  cropToWebP(file, function(dataUrl) {
+    const pr    = document.getElementById('addImgPreview');
+    const box   = document.getElementById('addUploadBox');
+    const badge = document.getElementById('addImgBadge');
+    pr.src = dataUrl;
+    box.classList.add('has-img');
+    // yol: dosya adının .webp versiyonu
+    const baseName = file.name.replace(/\.[^.]+$/, '') + '.webp';
+    badge.textContent = '500×500 WebP ✓'; badge.style.display = 'block';
+    const pathInput = document.getElementById('addImg');
+    if (!pathInput.value.trim()) pathInput.value = baseName;
+    // işlenmiş dataUrl'i input'a bağla (kayıt sırasında kullanılır)
+    box._webpData = dataUrl;
+    box._webpName = baseName;
+    // İndir butonu göster
+    showDownloadHint('addDownloadHint', dataUrl, baseName);
+  });
+}
+function clearAddImage(e) {
   e.stopPropagation();
-  const box=document.getElementById('addUploadBox');
-  const pr=document.getElementById('addImgPreview');
-  const badge=document.getElementById('addImgBadge');
-  pr.src=''; box.classList.remove('has-img');
-  badge.style.display='none';
-  box.querySelector('input[type=file]').value='';
+  const box   = document.getElementById('addUploadBox');
+  const pr    = document.getElementById('addImgPreview');
+  const badge = document.getElementById('addImgBadge');
+  pr.src = ''; box.classList.remove('has-img');
+  badge.style.display = 'none';
+  box.querySelector('input[type=file]').value = '';
+  box._webpData = null; box._webpName = null;
+  const hint = document.getElementById('addDownloadHint');
+  if (hint) hint.style.display = 'none';
 }
-function syncAddPathBadge(){
-  const v=document.getElementById('addImg').value.trim();
-  const badge=document.getElementById('addImgBadge');
-  const pr=document.getElementById('addImgPreview');
-  if(v && !pr.src.startsWith('data:')){
-    pr.src='assets/images/'+v;
-    document.getElementById('addUploadBox').classList.add('has-img');
-    badge.textContent=v.split('/').pop(); badge.style.display='block';
+function syncAddPathBadge() {
+  const v     = document.getElementById('addImg').value.trim();
+  const badge = document.getElementById('addImgBadge');
+  const pr    = document.getElementById('addImgPreview');
+  const box   = document.getElementById('addUploadBox');
+  if (v && pr.src && !pr.src.startsWith('data:')) {
+    pr.src = 'assets/images/' + v;
+    box.classList.add('has-img');
+    badge.textContent = v.split('/').pop(); badge.style.display = 'block';
   }
 }
-function onEditImageSelect(input){
-  const file=input.files[0]; if(!file) return;
-  const reader=new FileReader();
-  reader.onload=function(e){
-    const pr=document.getElementById('editImgPreview');
-    const box=document.getElementById('editUploadBox');
-    const badge=document.getElementById('editImgBadge');
-    pr.src=e.target.result;
+
+// Edit modal
+function onEditImageSelect(input) {
+  const file = input.files[0]; if (!file) return;
+  cropToWebP(file, function(dataUrl) {
+    const pr    = document.getElementById('editImgPreview');
+    const box   = document.getElementById('editUploadBox');
+    const badge = document.getElementById('editImgBadge');
+    pr.src = dataUrl;
     box.classList.add('has-img');
-    badge.textContent=file.name; badge.style.display='block';
-    const pathInput=document.getElementById('editImg');
-    if(!pathInput.value.trim()) pathInput.value=file.name;
-  };
-  reader.readAsDataURL(file);
+    const baseName = file.name.replace(/\.[^.]+$/, '') + '.webp';
+    badge.textContent = '500×500 WebP ✓'; badge.style.display = 'block';
+    const pathInput = document.getElementById('editImg');
+    if (!pathInput.value.trim()) pathInput.value = baseName;
+    box._webpData = dataUrl; box._webpName = baseName;
+    showDownloadHint('editDownloadHint', dataUrl, baseName);
+  });
 }
-function clearEditImage(e){
+function clearEditImage(e) {
   e.stopPropagation();
-  const box=document.getElementById('editUploadBox');
-  const pr=document.getElementById('editImgPreview');
-  const badge=document.getElementById('editImgBadge');
-  pr.src=''; box.classList.remove('has-img');
-  badge.style.display='none';
-  box.querySelector('input[type=file]').value='';
-  document.getElementById('editImg').value='';
+  const box   = document.getElementById('editUploadBox');
+  const pr    = document.getElementById('editImgPreview');
+  const badge = document.getElementById('editImgBadge');
+  pr.src = ''; box.classList.remove('has-img');
+  badge.style.display = 'none';
+  box.querySelector('input[type=file]').value = '';
+  box._webpData = null; box._webpName = null;
+  document.getElementById('editImg').value = '';
+  const hint = document.getElementById('editDownloadHint');
+  if (hint) hint.style.display = 'none';
+}
+
+// İndir ipucu kutusu
+function showDownloadHint(hintId, dataUrl, name) {
+  const hint = document.getElementById(hintId);
+  if (!hint) return;
+  hint.style.display = 'flex';
+  hint.querySelector('.hint-filename').textContent = name;
+  hint.querySelector('.hint-dl-btn').onclick = function() {
+    const a = document.createElement('a');
+    a.href = dataUrl; a.download = name; a.click();
+  };
 }
 
 function addProduct(){
