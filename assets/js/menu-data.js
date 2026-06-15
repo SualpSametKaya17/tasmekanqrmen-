@@ -4035,15 +4035,6 @@ const MENU_DATA = {
         "price": 700,
         "id": 108,
         "active": true
-      },
-      {
-        "cat": "etler",
-        "img": "Menü/Et Menü/Domuz Pirzola.webp",
-        "name": "Pig Chop",
-        "desc": "2 pork chops grilled and served with potatoes and salad.",
-        "price": 750,
-        "id": 340,
-        "active": true
       }
     ],
     "icecekler": [
